@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cauldron">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+html { padding-top: env(safe-area-inset-top, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+</style>
+<title>Cauldron Hill Warband</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=UnifrakturCook:wght@700&family=Cinzel:wght@600;700&family=Crimson+Pro:wght@400;600&display=swap">
+<style>
+/* Layout: Warband tab plus up to seven unit tabs in a scrolling bottom strip; heavy sans headings, blackletter section titles, tilted stat boxes, leaf and stipple bands. */
+:root {
+  --bg: #ebebe8;
+  --ink: #0c0c0c;
+  --field: #f8f8f6;
+  --bar: #cfcfcc;
+  --rule: #9a9a97;
+  --muted: #5c5c59;
+  --blood: #8a1717;
+  --heavy: "Archivo Black", "Arial Black", Impact, "Helvetica Neue", sans-serif;
+  --fraktur: "UnifrakturCook", "Old English Text MT", Georgia, serif;
+  --caps: "Cinzel", "Times New Roman", Georgia, serif;
+  --body: "Crimson Pro", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121211; --ink: #ecebe6; --field: #1b1b1a; --bar: #2b2b29; --rule: #5a5a56;
+    --muted: #a3a29c; --blood: #c8402f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121211; --ink: #ecebe6; --field: #1b1b1a; --bar: #2b2b29; --rule: #5a5a56;
+  --muted: #a3a29c; --blood: #c8402f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 18px;
+  padding-inline: 16px; padding-block: 14px 110px; min-height: 100%;
+  -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
+}
+.wrap { max-width: 560px; margin-inline: auto; }
+.panel { display: flex; flex-direction: column; gap: 16px; }
+.panel[hidden] { display: none !important; }
+input, textarea, button { font-family: var(--body); color: var(--ink); }
+:focus-visible { outline: 3px solid var(--blood); outline-offset: 2px; }
+
+.lab { font-family: var(--heavy); font-size: 22px; line-height: 1; letter-spacing: -0.5px; display: block; margin: 0 0 6px; }
+.lab small { font-family: var(--caps); font-size: 13px; letter-spacing: 1px; font-weight: 700; }
+.box {
+  background: var(--field); border: 3px solid var(--ink); width: 100%; min-width: 0;
+  border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; padding: 10px 12px; font-size: 20px; font-weight: 600;
+}
+.box:focus { outline: 3px solid var(--blood); outline-offset: 1px; }
+textarea.box { resize: none; min-height: 112px; display: block; overflow: hidden; line-height: 1.35; font-weight: 400; font-size: 18px; }
+.head { font-family: var(--fraktur); font-size: 32px; line-height: 1; margin: 4px 0 -6px; }
+.head .cap { font-size: 1.25em; }
+
+/* bands */
+.stipple { height: 16px; background-image: radial-gradient(var(--ink) 1.7px, transparent 2px); background-size: 11px 8px; background-position: 0 2px; opacity: .9; }
+.leaf {
+  height: 26px; background: var(--ink);
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='24' viewBox='0 0 72 24'><g fill='black'><path d='M6 20 Q10 8 18 4 Q16 14 6 20Z'/><path d='M14 22 Q22 14 30 14 Q24 22 14 22Z'/><path d='M30 6 L36 2 L38 5 L32 9Z'/><path d='M34 14 L40 10 L42 13 L36 17Z'/><path d='M40 20 L46 16 L48 19 L42 23Z'/><path d='M52 20 Q54 8 64 3 Q64 14 52 20Z'/></g></svg>");
+          mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='24' viewBox='0 0 72 24'><g fill='black'><path d='M6 20 Q10 8 18 4 Q16 14 6 20Z'/><path d='M14 22 Q22 14 30 14 Q24 22 14 22Z'/><path d='M30 6 L36 2 L38 5 L32 9Z'/><path d='M34 14 L40 10 L42 13 L36 17Z'/><path d='M40 20 L46 16 L48 19 L42 23Z'/><path d='M52 20 Q54 8 64 3 Q64 14 52 20Z'/></g></svg>");
+  -webkit-mask-size: 72px 24px; mask-size: 72px 24px; -webkit-mask-repeat: repeat-x; mask-repeat: repeat-x; -webkit-mask-position: 0 center; mask-position: 0 center;
+}
+
+/* unit header row */
+.toprow { display: grid; grid-template-columns: minmax(0, 1fr) 104px; gap: 12px; align-items: end; }
+.costbox { transform: rotate(2deg); }
+.costbox .lab { font-size: 20px; }
+
+/* life */
+.liferow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.life-word { font-family: var(--heavy); font-size: 54px; line-height: .9; letter-spacing: -2px; }
+.lifebox {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2px;
+  border: 3px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px; background: var(--field); padding: 6px 4px 8px;
+}
+.lifecol { display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
+.lifecol .tag { font-family: var(--heavy); font-size: 12px; letter-spacing: -.2px; }
+.num { font-family: var(--heavy); font-size: 38px; line-height: 1; min-width: 1.6ch; text-align: center; font-variant-numeric: tabular-nums; }
+.slash { font-family: var(--heavy); font-size: 40px; line-height: 1; padding-top: 14px; }
+.btnrow { display: flex; gap: 6px; }
+.step {
+  width: 40px; height: 40px; flex: none; border: 2.5px solid var(--ink); background: var(--bg); padding: 0;
+  border-radius: 50% 44% 52% 46%; font: 400 26px/1 var(--heavy); display: grid; place-items: center; cursor: pointer; touch-action: manipulation;
+}
+.step:active { background: var(--ink); color: var(--bg); }
+
+/* stats */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding-top: 6px; }
+.stat { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.stat:nth-child(1) { transform: rotate(-2.5deg); }
+.stat:nth-child(2) { transform: rotate(1.5deg); }
+.stat:nth-child(3) { transform: rotate(-2deg); }
+.stat:nth-child(4) { transform: rotate(2.5deg); }
+.stat label { font-family: var(--caps); font-weight: 700; font-size: 12px; letter-spacing: .6px; text-align: center; }
+.stat input { text-align: center; font-family: var(--heavy); font-size: 26px; font-weight: 400; padding: 12px 2px; min-height: 66px; }
+
+/* warband tab */
+.big { font-family: var(--heavy); font-size: 44px; line-height: .95; letter-spacing: -2px; transform: rotate(-2deg); transform-origin: left center; margin: 4px 0 0; }
+.bandname { font-size: 22px; }
+.roster { display: flex; flex-direction: column; gap: 8px; }
+.rrow {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: center; text-align: left; width: 100%;
+  background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
+  padding: 10px 12px; min-height: 52px; cursor: pointer; touch-action: manipulation; font-size: 18px;
+}
+.rrow:active { background: var(--bar); }
+.rrow .rn { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rrow .rn i { color: var(--muted); font-style: normal; font-weight: 400; }
+.rrow .rl, .rrow .rc { font-family: var(--heavy); font-size: 16px; font-variant-numeric: tabular-nums; }
+.totals { display: flex; justify-content: space-between; gap: 12px; font-family: var(--caps); font-weight: 700; letter-spacing: 1px; font-size: 14px; padding-inline: 4px; }
+.totals b { font-family: var(--heavy); font-weight: 400; font-size: 20px; letter-spacing: 0; }
+.addbtn, .rmbtn {
+  border: 2.5px dashed var(--ink); background: transparent; border-radius: 8px; min-height: 52px; font-family: var(--heavy);
+  font-size: 18px; padding: 8px 14px; cursor: pointer; touch-action: manipulation;
+}
+.addbtn:active { background: var(--ink); color: var(--bg); }
+.addbtn[hidden], .rmbtn[hidden] { display: none; }
+.rmbtn { border-style: solid; border-color: var(--rule); color: var(--muted); font-family: var(--body); font-weight: 600; font-size: 16px; margin-top: 10px; }
+.rmbtn.arm { border-color: var(--blood); color: var(--blood); }
+.goldrow { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.goldrow .tg { font-family: var(--caps); font-weight: 700; font-size: 26px; line-height: .95; text-align: right; letter-spacing: 1px; }
+.arch {
+  width: min(200px, 100%); border: 4px solid var(--ink); border-bottom-width: 4px; border-radius: 90px 90px 6px 6px / 70px 70px 6px 6px;
+  background: var(--field); padding: 26px 10px 12px; text-align: center; font-family: var(--heavy); font-size: 34px; min-height: 96px;
+}
+.arch:focus { outline: 3px solid var(--blood); }
+
+/* bottom tabs */
+.tabs {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 5; background: var(--bg); border-top: 4px solid var(--ink);
+  padding-bottom: env(safe-area-inset-bottom, 0px); display: flex; overflow-x: auto; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex: 0 0 auto; min-width: 74px; max-width: 120px; background: transparent; border: 0; padding: 8px 10px; min-height: 58px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; scroll-snap-align: center; touch-action: manipulation;
+}
+.tab[hidden] { display: none; }
+.tab .g { font-family: var(--heavy); font-size: 20px; line-height: 1; }
+.tab .t { font-size: 12px; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
+.tab[aria-selected="true"] .t { color: var(--bg); }
+.tab.plus .g { font-size: 26px; }
+.status { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 4px); right: 10px; font-size: 13px; color: var(--muted); pointer-events: none; z-index: 6; }
+.status b { color: var(--blood); font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) { .step, .rrow { transition: background .12s, color .12s; } }
+</style>
+</head>
+<body>
+<div class="status" id="status" aria-live="polite"></div>
+<main class="wrap" id="app"><div id="panels"></div></main>
+<nav class="tabs" id="tabs" role="tablist" aria-label="Warband sections"></nav>
+
+<script>
+(function () {
+  var MAX_UNITS = 7;
+  var LS = "cauldron-sheet-v1", LS_TAB = "cauldron-sheet-tab";
+
+  function blankUnit() { return { name: "", cost: "", max: 0, cur: 0, move: "", combat: "", brains: "", defense: "", attrs: "", items: "" }; }
+  function blank() {
+    var u = []; for (var i = 0; i < MAX_UNITS; i++) u.push(blankUnit());
+    return { warband: "", notes: "", gold: "", n: 1, units: u };
+  }
+  function merge(b, o) {
+    if (o == null || typeof o !== "object") return b;
+    if (Array.isArray(b)) {
+      b.forEach(function (_, i) {
+        if (o[i] === undefined) return;
+        if (b[i] && typeof b[i] === "object") merge(b[i], o[i]); else if (typeof o[i] === typeof b[i]) b[i] = o[i];
+      });
+      return b;
+    }
+    Object.keys(b).forEach(function (k) {
+      var bv = b[k], ov = o[k];
+      if (bv && typeof bv === "object") merge(bv, ov);
+      else if (ov !== undefined && typeof ov === typeof bv) b[k] = ov;
+    });
+    return b;
+  }
+  function getPath(p) { return p.split(".").reduce(function (o, k) { return o == null ? o : o[k]; }, state); }
+  function setPath(p, v) {
+    var parts = p.split("."), o = state;
+    for (var i = 0; i < parts.length - 1; i++) o = o[parts[i]];
+    o[parts[parts.length - 1]] = v;
+  }
+  var state = blank();
+  try { var raw = localStorage.getItem(LS); if (raw) merge(state, JSON.parse(raw)); } catch (e) {}
+  state.n = Math.max(1, Math.min(MAX_UNITS, state.n | 0));
+
+  var panels = document.getElementById("panels"), tabs = document.getElementById("tabs");
+
+  /* ---------- build ---------- */
+  function unitPanel(i) {
+    var u = "units." + i;
+    return '<section class="panel" id="p-u' + i + '" role="tabpanel" hidden>' +
+      '<div class="toprow">' +
+        '<div><label class="lab" for="u' + i + '-name">Unit Name <small>+ TYPE</small></label><input class="box" id="u' + i + '-name" data-k="' + u + '.name" type="text" autocomplete="off" placeholder="Name and type"></div>' +
+        '<div class="costbox"><label class="lab" for="u' + i + '-cost">$$ <small>COST</small></label><input class="box" id="u' + i + '-cost" data-k="' + u + '.cost" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>' +
+      '</div>' +
+      '<div class="stipple" aria-hidden="true"></div>' +
+      '<div class="liferow"><div class="life-word">LIFE:</div>' +
+        '<div class="lifebox">' +
+          '<div class="lifecol"><span class="tag">CURRENT</span><span class="num" data-show="' + u + '.cur" aria-live="polite"></span>' +
+            '<div class="btnrow"><button type="button" class="step" data-step="' + u + '.cur" data-d="-1" aria-label="Lose 1 life">−</button><button type="button" class="step" data-step="' + u + '.cur" data-d="1" aria-label="Gain 1 life">+</button></div></div>' +
+          '<div class="slash" aria-hidden="true">/</div>' +
+          '<div class="lifecol"><span class="tag">MAX</span><span class="num" data-show="' + u + '.max" aria-live="polite"></span>' +
+            '<div class="btnrow"><button type="button" class="step" data-step="' + u + '.max" data-d="-1" aria-label="Lower max life">−</button><button type="button" class="step" data-step="' + u + '.max" data-d="1" aria-label="Raise max life">+</button></div></div>' +
+        '</div></div>' +
+      '<div class="stats">' +
+        ["move:MOVE", "combat:COMBAT", "brains:BRAINS", "defense:DEFENSE"].map(function (s) {
+          var k = s.split(":");
+          return '<div class="stat"><label for="u' + i + '-' + k[0] + '">' + k[1] + '</label><input class="box" id="u' + i + '-' + k[0] + '" data-k="' + u + '.' + k[0] + '" type="text" autocomplete="off"></div>';
+        }).join("") +
+      '</div>' +
+      '<div class="head"><label for="u' + i + '-attrs">Attributes and Spells</label></div><textarea class="box" id="u' + i + '-attrs" data-k="' + u + '.attrs" placeholder="Attributes, spells, special rules"></textarea>' +
+      '<div class="head"><label for="u' + i + '-items">Weapons and Items</label></div><textarea class="box" id="u' + i + '-items" data-k="' + u + '.items" placeholder="Weapons, armour, gear"></textarea>' +
+      '<button type="button" class="rmbtn" id="rm-' + i + '" data-remove="' + i + '">Remove this unit</button>' +
+    '</section>';
+  }
+  var html = '<section class="panel" id="p-band" role="tabpanel" hidden>' +
+      '<h1 class="big">WARBAND</h1>' +
+      '<input class="box bandname" id="band-name" data-k="warband" type="text" autocomplete="off" aria-label="Warband name" placeholder="Name your warband">' +
+      '<div class="leaf" aria-hidden="true"></div>' +
+      '<div class="roster" id="roster"></div>' +
+      '<div class="totals"><span>UNITS <b id="tot-units">1</b>/7</span><span>TOTAL COST <b id="tot-cost">0</b></span></div>' +
+      '<button type="button" class="addbtn" id="add-unit" data-add="1">+ Add a unit</button>' +
+      '<div class="head"><label for="band-notes"><span class="cap">N</span>otes</label></div>' +
+      '<textarea class="box" id="band-notes" data-k="notes" style="min-height:160px" placeholder="Notes"></textarea>' +
+      '<div class="leaf" aria-hidden="true"></div>' +
+      '<div class="goldrow"><label class="tg" for="band-gold">TOTAL<br>GOLD</label><input class="arch" id="band-gold" data-k="gold" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></div>' +
+    '</section>';
+  var th = '<button type="button" class="tab" role="tab" id="t-band" data-tab="band" aria-selected="false"><span class="g">☰</span><span class="t">Warband</span></button>';
+  for (var i = 0; i < MAX_UNITS; i++) {
+    html += unitPanel(i);
+    th += '<button type="button" class="tab" role="tab" id="t-u' + i + '" data-tab="u' + i + '" aria-selected="false"><span class="g">' + (i + 1) + '</span><span class="t" id="tl-u' + i + '"></span></button>';
+  }
+  th += '<button type="button" class="tab plus" id="t-add" data-add="1" aria-label="Add a unit"><span class="g">+</span><span class="t">Add unit</span></button>';
+  panels.innerHTML = html; tabs.innerHTML = th;
+
+  /* ---------- render ---------- */
+  function grow(t) { t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight + 4, 0) + "px"; }
+  function firstWord(s) { s = (s || "").trim(); return s ? s.split(/\s+/)[0] : ""; }
+  function num(v) { var x = parseFloat(String(v).replace(/[^0-9.\-]/g, "")); return isNaN(x) ? 0 : x; }
+
+  function paint() {
+    document.querySelectorAll("[data-k]").forEach(function (el) {
+      var v = getPath(el.getAttribute("data-k"));
+      if (document.activeElement !== el && el.value !== v) el.value = v == null ? "" : v;
+      if (el.tagName === "TEXTAREA") grow(el);
+    });
+    document.querySelectorAll("[data-show]").forEach(function (el) { el.textContent = String(getPath(el.getAttribute("data-show"))); });
+    for (var i = 0; i < MAX_UNITS; i++) {
+      var tb = document.getElementById("t-u" + i); tb.hidden = i >= state.n;
+      document.getElementById("tl-u" + i).textContent = firstWord(state.units[i].name) || "Unit " + (i + 1);
+      document.getElementById("rm-" + i).hidden = state.n <= 1;
+    }
+    var add = document.getElementById("t-add"); add.hidden = state.n >= MAX_UNITS;
+    document.getElementById("add-unit").hidden = state.n >= MAX_UNITS;
+    paintRoster();
+  }
+  function paintRoster() {
+    var r = document.getElementById("roster"), cost = 0;
+    r.textContent = "";
+    for (var i = 0; i < state.n; i++) {
+      var u = state.units[i]; cost += num(u.cost);
+      var b = document.createElement("button"); b.type = "button"; b.className = "rrow"; b.setAttribute("data-tab", "u" + i);
+      var a = document.createElement("span"); a.className = "rn";
+      a.textContent = u.name.trim() || "Unit " + (i + 1);
+      var l = document.createElement("span"); l.className = "rl"; l.textContent = u.cur + "/" + u.max;
+      var c = document.createElement("span"); c.className = "rc"; c.textContent = u.cost ? "$" + u.cost : "";
+      b.appendChild(a); b.appendChild(l); b.appendChild(c); r.appendChild(b);
+    }
+    document.getElementById("tot-units").textContent = state.n;
+    document.getElementById("tot-cost").textContent = String(Math.round(cost * 100) / 100);
+  }
+
+  var tab = "band";
+  try { var st = localStorage.getItem(LS_TAB); if (st) tab = st; } catch (e) {}
+  function showTab(t) {
+    var m = /^u(\d)$/.exec(t);
+    if (m && +m[1] >= state.n) t = "band";
+    if (!document.getElementById("p-" + t)) t = "band";
+    tab = t;
+    document.querySelectorAll(".panel").forEach(function (p) { p.hidden = p.id !== "p-" + t; });
+    document.querySelectorAll(".tab[data-tab]").forEach(function (b) {
+      var on = b.getAttribute("data-tab") === t; b.setAttribute("aria-selected", on ? "true" : "false");
+      if (on && b.scrollIntoView) { try { b.scrollIntoView({ inline: "center", block: "nearest" }); } catch (e) {} }
+    });
+    try { localStorage.setItem(LS_TAB, t); } catch (e) {}
+    document.querySelectorAll("#p-" + t + " textarea").forEach(grow);
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- saving ---------- */
+  var statusEl = document.getElementById("status"), dbDoc = null, timer = null, inflight = false, again = false, dirty = false;
+  function setStatus(msg, warn) { statusEl.innerHTML = warn ? "<b>" + msg + "</b>" : msg; }
+  function lsSave() { try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {} }
+  function touch() { dirty = true; lsSave(); setStatus("Saving…"); clearTimeout(timer); timer = setTimeout(flush, 700); }
+  async function flush() {
+    if (!dbDoc) { dirty = false; setStatus("Saved on this device only"); return; }
+    if (inflight) { again = true; return; }
+    inflight = true; dirty = false;
+    try { await dbDoc.set({ v: 1, state: JSON.parse(JSON.stringify(state)) }); setStatus("Saved"); }
+    catch (e) { setStatus("Not saved to your account", true); }
+    inflight = false;
+    if (again || dirty) { again = false; flush(); }
+  }
+
+  /* ---------- events ---------- */
+  var armTimer = null;
+  document.addEventListener("input", function (e) {
+    var el = e.target, k = el.getAttribute && el.getAttribute("data-k");
+    if (!k) return;
+    setPath(k, el.value);
+    if (el.tagName === "TEXTAREA") grow(el);
+    if (/\.name$|\.cost$/.test(k)) { paint(); }
+    touch();
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target : e.target.parentNode, b;
+    if ((b = t.closest("[data-step]"))) {
+      var k = b.getAttribute("data-step"), d = parseInt(b.getAttribute("data-d"), 10), nx = Math.max(0, (getPath(k) || 0) + d);
+      setPath(k, nx); paint(); touch(); return;
+    }
+    if (t.closest("[data-add]")) {
+      if (state.n < MAX_UNITS) { state.n++; paint(); touch(); showTab("u" + (state.n - 1)); }
+      return;
+    }
+    if ((b = t.closest("[data-remove]"))) {
+      var i = parseInt(b.getAttribute("data-remove"), 10);
+      if (!b.classList.contains("arm")) {
+        b.classList.add("arm"); b.textContent = "Tap again to remove";
+        clearTimeout(armTimer); armTimer = setTimeout(function () { b.classList.remove("arm"); b.textContent = "Remove this unit"; }, 3500);
+        return;
+      }
+      clearTimeout(armTimer); b.classList.remove("arm"); b.textContent = "Remove this unit";
+      state.units.splice(i, 1); state.units.push(blankUnit()); state.n = Math.max(1, state.n - 1);
+      paint(); touch(); showTab(state.n > 0 ? "u" + Math.min(i, state.n - 1) : "band"); return;
+    }
+    if ((b = t.closest("[data-tab]"))) showTab(b.getAttribute("data-tab"));
+  });
+  window.addEventListener("resize", function () { document.querySelectorAll("#p-" + tab + " textarea").forEach(grow); });
+
+  paint(); showTab(tab);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll("#p-" + tab + " textarea").forEach(grow); });
+
+  /* ---------- account sync (optional) ---------- */
+  (async function () {
+    if (!window.claude || !window.claude.use) { setStatus("Saved on this device only"); return; }
+    try {
+      var user = await window.claude.use("user"), db = await window.claude.use("db");
+      var uid = user ? await user.id() : null;
+      if (!db || !uid) { setStatus("Saved on this device only"); return; }
+      var ref = db.doc("data/users/" + uid + "/cauldron-sheet"), first = true;
+      ref.onSnapshot(function (snap) {
+        var remote = snap.exists ? snap.data() : null;
+        if (first) {
+          first = false; dbDoc = ref;
+          if (remote && remote.state) {
+            if (dirty) flush(); else { state = merge(blank(), remote.state); state.n = Math.max(1, Math.min(MAX_UNITS, state.n | 0)); lsSave(); paint(); showTab(tab); }
+            setStatus("Saved");
+          } else if (JSON.stringify(state) !== JSON.stringify(blank())) flush(); else setStatus("Saved");
+          return;
+        }
+        if (snap.metadata.hasPendingWrites || dirty || inflight) return;
+        var a = document.activeElement; if (a && /INPUT|TEXTAREA/.test(a.tagName)) return;
+        if (remote && remote.state && JSON.stringify(remote.state) !== JSON.stringify(state)) {
+          state = merge(blank(), remote.state); state.n = Math.max(1, Math.min(MAX_UNITS, state.n | 0)); lsSave(); paint();
+        }
+      }, function () { dbDoc = null; setStatus("Saved on this device only"); });
+    } catch (e) { setStatus("Saved on this device only"); }
+  })();
+})();
+</script>
+
+</body>
+</html>
