@@ -96,6 +96,28 @@ textarea.box { resize: none; min-height: 112px; display: block; overflow: hidden
 }
 .step:active { background: var(--ink); color: var(--bg); }
 
+/* portrait */
+.idrow { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.lifeside { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.lifeside .life-word { font-size: 48px; }
+.portrait-wrap { position: relative; min-height: 160px; }
+.portrait {
+  display: grid; place-items: center; position: absolute; inset: 0; overflow: hidden; cursor: pointer; text-align: center;
+  background: var(--bar); border: 3px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px;
+}
+.portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.portrait img[hidden], .portrait .ph[hidden] { display: none; }
+.portrait .ph { font-family: var(--heavy); font-size: 15px; line-height: 1.1; padding: 8px; letter-spacing: -.3px; }
+.portrait .ph small { display: block; font-family: var(--body); font-size: 13px; color: var(--muted); margin-top: 4px; letter-spacing: 0; }
+.portrait input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.portrait:focus-within { outline: 3px solid var(--blood); outline-offset: 2px; }
+.portrait-x {
+  position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; border-radius: 50%; z-index: 2;
+  background: var(--bg); color: var(--ink); border: 2px solid var(--ink); font: 400 16px/1 var(--heavy);
+  display: grid; place-items: center; padding: 0; cursor: pointer; touch-action: manipulation;
+}
+.portrait-x[hidden] { display: none; }
+
 /* stats */
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding-top: 6px; }
 .stat { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
@@ -211,14 +233,19 @@ textarea.box { resize: none; min-height: 112px; display: block; overflow: hidden
         '<div class="costbox"><label class="lab" for="u' + i + '-cost">$$ <small>COST</small></label><input class="box" id="u' + i + '-cost" data-k="' + u + '.cost" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>' +
       '</div>' +
       '<div class="stipple" aria-hidden="true"></div>' +
-      '<div class="liferow"><div class="life-word">LIFE:</div>' +
+      '<div class="idrow">' +
+        '<div class="portrait-wrap"><label class="portrait" for="u' + i + '-photo"><img id="u' + i + '-img" alt="Portrait of unit ' + (i + 1) + '" hidden>' +
+          '<span class="ph" id="u' + i + '-ph">Add portrait<small>Tap to choose a photo</small></span>' +
+          '<input type="file" accept="image/*" id="u' + i + '-photo" data-photo="u' + i + '" aria-label="Choose a portrait photo for unit ' + (i + 1) + '"></label>' +
+          '<button type="button" class="portrait-x" id="u' + i + '-x" data-clearphoto="u' + i + '" aria-label="Remove portrait" hidden>✕</button></div>' +
+        '<div class="lifeside"><div class="life-word">LIFE:</div>' +
         '<div class="lifebox">' +
           '<div class="lifecol"><span class="tag">CURRENT</span><span class="num" data-show="' + u + '.cur" aria-live="polite"></span>' +
             '<div class="btnrow"><button type="button" class="step" data-step="' + u + '.cur" data-d="-1" aria-label="Lose 1 life">−</button><button type="button" class="step" data-step="' + u + '.cur" data-d="1" aria-label="Gain 1 life">+</button></div></div>' +
           '<div class="slash" aria-hidden="true">/</div>' +
           '<div class="lifecol"><span class="tag">MAX</span><span class="num" data-show="' + u + '.max" aria-live="polite"></span>' +
             '<div class="btnrow"><button type="button" class="step" data-step="' + u + '.max" data-d="-1" aria-label="Lower max life">−</button><button type="button" class="step" data-step="' + u + '.max" data-d="1" aria-label="Raise max life">+</button></div></div>' +
-        '</div></div>' +
+        '</div></div></div>' +
       '<div class="stats">' +
         ["move:MOVE", "combat:COMBAT", "brains:BRAINS", "defense:DEFENSE"].map(function (s) {
           var k = s.split(":");
@@ -319,6 +346,84 @@ textarea.box { resize: none; min-height: 112px; display: block; overflow: hidden
     if (again || dirty) { again = false; flush(); }
   }
 
+  /* ---------- portraits ---------- */
+  var photos = {}, photoDb = null, photoUid = null;
+  for (var pi = 0; pi < MAX_UNITS; pi++) {
+    try { var pv = localStorage.getItem(LS + "-ph-u" + pi); if (pv) photos["u" + pi] = pv; } catch (e) {}
+  }
+  function paintPhotos() {
+    for (var n = 0; n < MAX_UNITS; n++) {
+      var c = "u" + n, img = document.getElementById(c + "-img"), has = !!photos[c];
+      if (has) img.src = photos[c]; else img.removeAttribute("src");
+      img.hidden = !has;
+      document.getElementById(c + "-ph").hidden = has;
+      document.getElementById(c + "-x").hidden = !has;
+    }
+  }
+  function photoRef(c) { return photoDb && photoUid ? photoDb.doc("data/users/" + photoUid + "/portrait-" + c) : null; }
+  function photoLocal(c) {
+    try { if (photos[c]) localStorage.setItem(LS + "-ph-" + c, photos[c]); else localStorage.removeItem(LS + "-ph-" + c); return true; }
+    catch (e) { return false; }
+  }
+  async function photoRemote(c) {
+    var ref = photoRef(c); if (!ref) return;
+    try {
+      setStatus("Saving…");
+      if (photos[c]) await ref.set({ img: photos[c] }); else await ref.delete();
+      setStatus("Saved");
+    } catch (e) { setStatus("Photo not saved to your account", true); }
+  }
+  function shrink(file, cb) {
+    var url = URL.createObjectURL(file), im = new Image();
+    im.onload = function () {
+      var W = 400, H = 500, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+      var g = cv.getContext("2d"), s = Math.max(W / im.naturalWidth, H / im.naturalHeight);
+      var w = im.naturalWidth * s, h = im.naturalHeight * s;
+      g.fillStyle = "#000"; g.fillRect(0, 0, W, H);
+      g.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+      URL.revokeObjectURL(url);
+      cb(cv.toDataURL("image/jpeg", 0.8));
+    };
+    im.onerror = function () { URL.revokeObjectURL(url); setStatus("That photo could not be read", true); };
+    im.src = url;
+  }
+  function setPhoto(c, data) {
+    photos[c] = data; paintPhotos();
+    if (!photoLocal(c)) setStatus("Photo too big to keep on this device", true);
+    photoRemote(c);
+  }
+  async function shiftPhotos(from) {
+    for (var j = from; j < MAX_UNITS - 1; j++) {
+      if (photos["u" + (j + 1)]) photos["u" + j] = photos["u" + (j + 1)]; else delete photos["u" + j];
+    }
+    delete photos["u" + (MAX_UNITS - 1)];
+    for (var k = from; k < MAX_UNITS; k++) photoLocal("u" + k);
+    paintPhotos();
+    for (var m = from; m < MAX_UNITS; m++) await photoRemote("u" + m);
+  }
+  async function loadPhotos() {
+    for (var n = 0; n < MAX_UNITS; n++) {
+      var c = "u" + n, ref = photoRef(c);
+      try {
+        var snap = await ref.get(), d = snap.exists ? snap.data() : null;
+        if (d && typeof d.img === "string" && d.img.indexOf("data:image/") === 0) {
+          if (!photos[c]) { photos[c] = d.img; photoLocal(c); paintPhotos(); }
+        } else if (photos[c]) { photoRemote(c); }
+      } catch (e) {}
+    }
+  }
+  document.addEventListener("change", function (e) {
+    var el = e.target, c = el.getAttribute && el.getAttribute("data-photo");
+    if (!c || !el.files || !el.files[0]) return;
+    var f = el.files[0]; el.value = "";
+    shrink(f, function (data) { setPhoto(c, data); });
+  });
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest ? e.target : e.target.parentNode, b = t.closest("[data-clearphoto]");
+    if (!b) return;
+    var c = b.getAttribute("data-clearphoto"); delete photos[c]; paintPhotos(); photoLocal(c); photoRemote(c);
+  });
+
   /* ---------- events ---------- */
   var armTimer = null;
   document.addEventListener("input", function (e) {
@@ -347,14 +452,14 @@ textarea.box { resize: none; min-height: 112px; display: block; overflow: hidden
         return;
       }
       clearTimeout(armTimer); b.classList.remove("arm"); b.textContent = "Remove this unit";
-      state.units.splice(i, 1); state.units.push(blankUnit()); state.n = Math.max(1, state.n - 1);
+      state.units.splice(i, 1); state.units.push(blankUnit()); state.n = Math.max(1, state.n - 1); shiftPhotos(i);
       paint(); touch(); showTab(state.n > 0 ? "u" + Math.min(i, state.n - 1) : "band"); return;
     }
     if ((b = t.closest("[data-tab]"))) showTab(b.getAttribute("data-tab"));
   });
   window.addEventListener("resize", function () { document.querySelectorAll("#p-" + tab + " textarea").forEach(grow); });
 
-  paint(); showTab(tab);
+  paint(); paintPhotos(); showTab(tab);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll("#p-" + tab + " textarea").forEach(grow); });
 
   /* ---------- account sync (optional) ---------- */
@@ -365,6 +470,7 @@ textarea.box { resize: none; min-height: 112px; display: block; overflow: hidden
       var uid = user ? await user.id() : null;
       if (!db || !uid) { setStatus("Saved on this device only"); return; }
       var ref = db.doc("data/users/" + uid + "/cauldron-sheet"), first = true;
+      photoDb = db; photoUid = uid; loadPhotos();
       ref.onSnapshot(function (snap) {
         var remote = snap.exists ? snap.data() : null;
         if (first) {
