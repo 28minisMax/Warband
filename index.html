@@ -173,6 +173,15 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .sheet[hidden], .sheet-bg[hidden] { display: none; }
 
 /* warband roster */
+.tragedy { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; padding: 6px 10px 6px 14px; }
+.tragedy .tl { margin: 0; }
+.tctl { display: flex; align-items: center; gap: 10px; }
+.tctl .step { width: 40px; height: 40px; font-size: 22px; }
+.tnum { font-family: var(--numeral); font-size: 32px; line-height: 1; min-width: 1.6ch; text-align: center; font-variant-numeric: tabular-nums; }
+.resetbtn { border: 2.5px dashed var(--rule); background: transparent; border-radius: 8px; min-height: 52px; font: 600 17px var(--body); color: var(--muted); padding: 8px 14px; cursor: pointer; touch-action: manipulation; margin-top: 8px; }
+.resetbtn:active { border-color: var(--blood); color: var(--blood); }
+.reset-q { font-family: var(--display); font-size: 27px; line-height: 1.15; margin: 0; text-wrap: balance; }
+.reset-sub { margin: 0; color: var(--muted); font-size: 16px; }
 .notescell { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .notebox { position: relative; aspect-ratio: 4 / 5; width: 100%; }
 .notebox textarea { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; overflow: auto; border-width: 3px; padding: 10px; font-size: 17px; }
@@ -225,6 +234,13 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   <div id="panels"></div>
 </main>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Sheet sections"></nav>
+<div class="sheet-bg" id="reset-bg" hidden></div>
+<div class="sheet" id="reset-sheet" role="alertdialog" aria-labelledby="reset-q" hidden>
+  <p class="reset-q" id="reset-q"></p>
+  <p class="reset-sub">This wipes every hero, the party page and all photos.</p>
+  <button type="button" class="danger" id="reset-yes">Let them be forgotten</button>
+  <button type="button" id="reset-no">Spare them</button>
+</div>
 <div class="sheet-bg" id="sheet-bg" hidden></div>
 <div class="sheet" id="sheet" role="dialog" aria-label="Portrait options" hidden>
   <button type="button" id="sheet-change">Choose a new photo</button>
@@ -241,7 +257,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   function blank() {
     var s = { warband: "", xp: "", gold: "", party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" } };
     for (var i = 1; i <= 5; i++) {
-      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0,
+      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, tragedies: 0,
         right: "", right_dmg: "", left: "", left_dmg: "", feats: "", flaws: "", items: ["", "", "", "", "", "", "", ""] };
     }
     return s;
@@ -319,6 +335,10 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
           '<button type="button" class="step" data-step="' + c + '.hp" data-d="1" aria-label="Gain 1 health">+</button></div></div>' +
       '</div></div>' +
       '<div class="stats">' + stats + '</div>' +
+      '<div class="tragedy"><span class="field-label tl"><span class="cap">T</span>ragedies</span><div class="tctl">' +
+        '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="-1" aria-label="Remove a tragedy">\u2212</button>' +
+        '<span class="tnum" data-show="' + c + '.tragedies" aria-live="polite"></span>' +
+        '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="1" aria-label="Add a tragedy">+</button></div></div>' +
       '<div class="hands">' + hand("right", "Right") + hand("left", "Left") + '</div>' +
       '<div class="two">' +
         '<div><label class="field-label" for="' + c + '-feats"><span class="cap">F</span>eats</label><textarea class="box" id="' + c + '-feats" data-k="' + c + '.feats" placeholder="Feats"></textarea></div>' +
@@ -337,7 +357,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       blk("calamity", "Calamity", 72) + blk("equipment", "Party Equipment", 120);
   }
 
-  var html = '<section class="panel" id="p-band" role="tabpanel" hidden>' + partyBlocks() + '<div class="sect-head"><span class="blot"><span class="cap">H</span>eroes</span></div><div class="roster" id="roster"><div class="notescell" id="notescell"><div class="notebox"><textarea class="box" id="party-notes" data-k="party.notes" aria-label="Notes" placeholder="Notes"></textarea></div><label class="nlabel" for="party-notes">Notes</label></div></div></section>';
+  var html = '<section class="panel" id="p-band" role="tabpanel" hidden>' + partyBlocks() + '<div class="sect-head"><span class="blot"><span class="cap">H</span>eroes</span></div><div class="roster" id="roster"><div class="notescell" id="notescell"><div class="notebox"><textarea class="box" id="party-notes" data-k="party.notes" aria-label="Notes" placeholder="Notes"></textarea></div><label class="nlabel" for="party-notes">Notes</label></div></div><button type="button" class="resetbtn" id="reset-open">Start a new warband</button></section>';
   var th = '<button type="button" class="tab" role="tab" id="t-band" data-tab="band" aria-selected="false"><span class="g">\u2630</span><span class="t">Warband</span></button>';
   for (var n = 1; n <= 5; n++) {
     html += charPanel(n);
@@ -357,7 +377,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     });
     document.querySelectorAll("[data-show]").forEach(function (el) {
       var k = el.getAttribute("data-show"), v = getPath(k);
-      el.textContent = /\.hp$/.test(k) ? String(v) : fmt(v);
+      el.textContent = /\.(hp|tragedies)$/.test(k) ? String(v) : fmt(v);
     });
     for (var n = 1; n <= 5; n++) {
       var nm = (state["c" + n].name || "").trim();
@@ -381,6 +401,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       b.appendChild(mk("div", "tn", nm));
       b.appendChild(mk("div", "tm", "HP " + h.hp + (h.armour ? "  \u00b7  Armour " + h.armour : "")));
       b.appendChild(mk("div", "ts", "Agi " + fmt(h.agility) + "  Pre " + fmt(h.presence) + "  Str " + fmt(h.strength) + "  Tou " + fmt(h.toughness)));
+      if (h.tragedies > 0) b.appendChild(mk("div", "ts", "Tragedies " + h.tragedies));
       r.insertBefore(b, nc);
     }
   }
@@ -501,6 +522,38 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   sheetBg.addEventListener("click", closeSheet);
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheetC) closeSheet(); });
 
+  /* ---------- new warband ---------- */
+  var QUESTIONS = [
+    "Wipe the slate? It was never clean.",
+    "Bury them all? Nobody is coming to mourn.",
+    "Begin again? The marsh does not care either way.",
+    "Erase the whole warband? They were always going to die.",
+    "Burn it down? Fire is the only honest accountant.",
+    "Start over? Every ending is just a rough draft of the next one.",
+    "Forget them? The dead are used to it.",
+    "Throw it all away? Gold is only slow dirt."
+  ];
+  var lastQ = -1, resetSheet = document.getElementById("reset-sheet"), resetBg = document.getElementById("reset-bg");
+  function openReset() {
+    var i; do { i = Math.floor(Math.random() * QUESTIONS.length); } while (i === lastQ && QUESTIONS.length > 1);
+    lastQ = i; document.getElementById("reset-q").textContent = QUESTIONS[i];
+    resetSheet.hidden = false; resetBg.hidden = false; document.getElementById("reset-no").focus();
+  }
+  function closeReset() { resetSheet.hidden = true; resetBg.hidden = true; }
+  async function doReset() {
+    closeReset();
+    state = blank(); lsSave();
+    var had = Object.keys(photos);
+    photos = {}; had.forEach(function (c) { photoLocal(c); });
+    paint(); paintPhotos(); showTab("band"); touch();
+    for (var k = 0; k < had.length; k++) await photoRemote(had[k]);
+  }
+  document.getElementById("reset-open").addEventListener("click", openReset);
+  document.getElementById("reset-no").addEventListener("click", closeReset);
+  resetBg.addEventListener("click", closeReset);
+  document.getElementById("reset-yes").addEventListener("click", doReset);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !resetSheet.hidden) closeReset(); });
+
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) {
     var el = e.target, k = el.getAttribute && el.getAttribute("data-k");
@@ -515,7 +568,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     if (b) {
       var k = b.getAttribute("data-step"), d = parseInt(b.getAttribute("data-d"), 10), cur = getPath(k) || 0;
       var next = cur + d;
-      if (/\.hp$/.test(k)) next = Math.max(next, 0); else next = Math.max(-9, Math.min(9, next));
+      if (/\.(hp|tragedies)$/.test(k)) next = Math.max(next, 0); else next = Math.max(-9, Math.min(9, next));
       setPath(k, next); paint(); touch(); return;
     }
     var t = e.target.closest && e.target.closest("[data-tab]");
