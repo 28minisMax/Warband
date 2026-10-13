@@ -137,6 +137,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   min-height: 44px; display: inline-flex; align-items: center; margin-top: -6px;
 }
 .openlink:active { color: var(--blood); }
+.masthead[hidden], .openlink[hidden] { display: none; }
 
 /* portrait */
 .idrow { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -153,17 +154,48 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .portrait .ph small { display: block; font-family: var(--body); font-size: 13px; color: var(--muted); margin-top: 4px; }
 .portrait input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .portrait:focus-within { outline: 3px solid var(--blood); outline-offset: 2px; }
-.portrait-x {
-  position: absolute; top: 6px; right: 6px; width: 36px; height: 36px; border-radius: 50%;
-  background: var(--bg); color: var(--ink); border: 2px solid var(--ink); font: 700 18px/1 var(--numeral);
-  display: grid; place-items: center; padding: 0; cursor: pointer; touch-action: manipulation;
+.backlink {
+  align-self: flex-start; background: transparent; border: 0; padding: 0 8px 0 0; min-height: 44px; margin-top: -6px;
+  font-family: var(--display); font-size: 20px; color: var(--ink); cursor: pointer; touch-action: manipulation;
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
 }
-.portrait-x[hidden] { display: none; }
+.sheet-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 20; }
+.sheet {
+  position: fixed; inset-inline: 0; bottom: 0; z-index: 21; background: var(--bg); border-top: 4px solid var(--ink);
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px;
+  max-width: 560px; margin-inline: auto;
+}
+.sheet button {
+  min-height: 52px; border: 2.5px solid var(--ink); background: var(--field); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
+  font: 600 19px var(--body); cursor: pointer; touch-action: manipulation;
+}
+.sheet .danger { color: var(--blood); border-color: var(--blood); }
+.sheet[hidden], .sheet-bg[hidden] { display: none; }
+
+/* warband roster */
+.notescell { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.notebox { position: relative; aspect-ratio: 4 / 5; width: 100%; }
+.notebox textarea { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; overflow: auto; border-width: 3px; padding: 10px; font-size: 17px; }
+.nlabel { font-family: var(--display); font-size: 24px; line-height: 1.05; }
+.scrolls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.scrolls .blot { font-size: 20px; padding: 8px 16px 10px; }
+.roster { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 14px; }
+.tile { display: flex; flex-direction: column; gap: 6px; text-align: left; background: transparent; border: 0; padding: 0; cursor: pointer; min-width: 0; touch-action: manipulation; }
+.tile .pic {
+  position: relative; aspect-ratio: 4 / 5; width: 100%; overflow: hidden; display: grid; place-items: center;
+  border: 3px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px; background: var(--bar);
+}
+.tile:active .pic { outline: 3px solid var(--blood); }
+.tile .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile .no { font-family: var(--display); font-size: 56px; line-height: 1; color: var(--muted); }
+.tile .tn { font-family: var(--display); font-size: 24px; line-height: 1.05; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .tm { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.tile .ts { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* bottom tabs */
 .tabs {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 5; background: var(--bg);
-  border-top: 4px solid var(--ink); display: grid; grid-template-columns: repeat(6, 1fr);
+  border-top: 4px solid var(--ink); display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .tab {
@@ -185,7 +217,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 <body>
 <div class="status" id="status" aria-live="polite"></div>
 <main class="wrap" id="app">
-  <section class="masthead" aria-label="Warband">
+  <section class="masthead" id="masthead" aria-label="Warband">
     <div class="mrow full"><span class="blot"><span class="cap">W</span>arband</span><input class="line" id="warband" data-k="warband" type="text" autocomplete="off" aria-label="Warband name" placeholder="Name your warband"></div>
     <div class="mrow"><span class="blot"><span class="cap">X</span>P</span><input class="line" id="xp" data-k="xp" type="text" inputmode="numeric" autocomplete="off" aria-label="Party XP" placeholder="0"></div>
     <div class="mrow"><span class="blot round">Gold</span><input class="line" id="gold" data-k="gold" type="text" inputmode="numeric" autocomplete="off" aria-label="Gold" placeholder="0"></div>
@@ -193,6 +225,12 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   <div id="panels"></div>
 </main>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Sheet sections"></nav>
+<div class="sheet-bg" id="sheet-bg" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-label="Portrait options" hidden>
+  <button type="button" id="sheet-change">Choose a new photo</button>
+  <button type="button" class="danger" id="sheet-remove">Remove photo</button>
+  <button type="button" id="sheet-cancel">Cancel</button>
+</div>
 
 <script>
 (function () {
@@ -201,7 +239,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   var ROMAN = ["I", "II", "III", "IV", "V"];
 
   function blank() {
-    var s = { warband: "", xp: "", gold: "", party: { scroll1: "", scroll2: "", calamity: "", equipment: "" } };
+    var s = { warband: "", xp: "", gold: "", party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" } };
     for (var i = 1; i <= 5; i++) {
       s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0,
         right: "", right_dmg: "", left: "", left_dmg: "", feats: "", flaws: "", items: ["", "", "", "", "", "", "", ""] };
@@ -265,12 +303,13 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<input class="box" id="' + c + '-' + key + '_dmg" data-k="' + c + '.' + key + '_dmg" type="text" autocomplete="off" aria-label="' + label + ' damage" placeholder="d6"></div>';
     }
     return '<section class="panel" id="p-' + c + '" role="tabpanel" hidden>' +
+      '<button type="button" class="backlink" data-tab="band">\u2039 Warband</button>' +
       '<div class="namebar"><label class="field-label" for="' + c + '-name"><span class="cap">N</span>ame:</label><input id="' + c + '-name" data-k="' + c + '.name" type="text" autocomplete="off" placeholder="Who is this?"></div>' +
       '<div class="idrow">' +
       '<div class="portrait-wrap"><label class="portrait" for="' + c + '-photo"><img id="' + c + '-img" alt="Portrait of hero ' + n + '" hidden>' +
         '<span class="ph" id="' + c + '-ph">Add portrait<small>Tap to choose a photo</small></span>' +
         '<input type="file" accept="image/*" id="' + c + '-photo" data-photo="' + c + '" aria-label="Choose a portrait photo for hero ' + n + '"></label>' +
-        '<button type="button" class="portrait-x" id="' + c + '-x" data-clearphoto="' + c + '" aria-label="Remove portrait" hidden>✕</button></div>' +
+        '</div>' +
       '<div class="vitals">' +
         '<div class="vital"><span class="field-label">Armour</span><div class="art">' + SHIELD +
           '<input class="plate shield" id="' + c + '-armour" data-k="' + c + '.armour" type="text" autocomplete="off" aria-label="Armour" placeholder="–"></div></div>' +
@@ -289,26 +328,25 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     '</section>';
   }
 
-  function partyPanel() {
+  function partyBlocks() {
     function blk(key, label, rows) {
       return '<div><div class="sect-head"><span class="blot"><span class="cap">' + label[0] + '</span>' + label.slice(1) + '</span></div>' +
         '<textarea class="box" style="margin-top:10px;min-height:' + rows + 'px" id="party-' + key + '" data-k="party.' + key + '" aria-label="' + label + '"></textarea></div>';
     }
-    return '<section class="panel" id="p-party" role="tabpanel" hidden>' +
-      blk("scroll1", "Scroll", 110) + blk("scroll2", "Scroll", 110) + blk("calamity", "Calamity", 96) + blk("equipment", "Party Equipment", 220) + '</section>';
+    return '<div class="scrolls">' + blk("scroll1", "Scroll", 84) + blk("scroll2", "Scroll", 84) + '</div>' +
+      blk("calamity", "Calamity", 72) + blk("equipment", "Party Equipment", 120);
   }
 
-  var html = "", th = "";
+  var html = '<section class="panel" id="p-band" role="tabpanel" hidden>' + partyBlocks() + '<div class="sect-head"><span class="blot"><span class="cap">H</span>eroes</span></div><div class="roster" id="roster"><div class="notescell" id="notescell"><div class="notebox"><textarea class="box" id="party-notes" data-k="party.notes" aria-label="Notes" placeholder="Notes"></textarea></div><label class="nlabel" for="party-notes">Notes</label></div></div></section>';
+  var th = '<button type="button" class="tab" role="tab" id="t-band" data-tab="band" aria-selected="false"><span class="g">\u2630</span><span class="t">Warband</span></button>';
   for (var n = 1; n <= 5; n++) {
     html += charPanel(n);
     th += '<button type="button" class="tab" role="tab" id="t-c' + n + '" data-tab="c' + n + '" aria-selected="false"><span class="g">' + ROMAN[n - 1] + '</span><span class="t" id="tl-c' + n + '"></span></button>';
   }
-  html += partyPanel();
-  th += '<button type="button" class="tab" role="tab" id="t-party" data-tab="party" aria-selected="false"><span class="g">✠</span><span class="t">Party</span></button>';
   panels.innerHTML = html; tabs.innerHTML = th;
 
   /* ---------- render ---------- */
-  function grow(t) { t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight + 4, 0) + "px"; }
+  function grow(t) { if (t.id === "party-notes") return; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight + 4, 0) + "px"; }
   function fmt(v) { return v > 0 ? "+" + v : String(v); }
 
   function paint() {
@@ -325,13 +363,34 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       var nm = (state["c" + n].name || "").trim();
       document.getElementById("tl-c" + n).textContent = nm ? nm.split(/\s+/)[0] : "Hero " + n;
     }
+    paintRoster();
+  }
+  function paintRoster() {
+    var r = document.getElementById("roster"); if (!r) return;
+    Array.prototype.forEach.call(r.querySelectorAll(".tile"), function (x) { x.remove(); });
+    var nc = document.getElementById("notescell");
+    function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+    for (var n = 1; n <= 5; n++) {
+      var c = "c" + n, h = state[c], b = mk("button", "tile"); b.type = "button"; b.setAttribute("data-tab", c);
+      var nm = (h.name || "").trim() || "Hero " + n;
+      b.setAttribute("aria-label", "Open " + nm);
+      var pic = mk("div", "pic");
+      if (photos[c]) { var im = document.createElement("img"); im.src = photos[c]; im.alt = ""; pic.appendChild(im); }
+      else pic.appendChild(mk("span", "no", ROMAN[n - 1]));
+      b.appendChild(pic);
+      b.appendChild(mk("div", "tn", nm));
+      b.appendChild(mk("div", "tm", "HP " + h.hp + (h.armour ? "  \u00b7  Armour " + h.armour : "")));
+      b.appendChild(mk("div", "ts", "Agi " + fmt(h.agility) + "  Pre " + fmt(h.presence) + "  Str " + fmt(h.strength) + "  Tou " + fmt(h.toughness)));
+      r.insertBefore(b, nc);
+    }
   }
 
-  var tab = "c1";
-  try { var st = localStorage.getItem(LS_TAB); if (st) tab = st; } catch (e) {}
+  var tab = "band";
   function showTab(t) {
-    if (!document.getElementById("p-" + t)) t = "c1";
+    if (!document.getElementById("p-" + t)) t = "band";
     tab = t;
+    var mh = document.getElementById("masthead"), ol = document.getElementById("openlink");
+    if (mh) mh.hidden = t !== "band"; if (ol) ol.hidden = t !== "band";
     document.querySelectorAll(".panel").forEach(function (p) { p.hidden = p.id !== "p-" + t; });
     document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === t ? "true" : "false"); });
     try { localStorage.setItem(LS_TAB, t); } catch (e) {}
@@ -368,8 +427,8 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       if (has) img.src = photos[c]; else img.removeAttribute("src");
       img.hidden = !has;
       document.getElementById(c + "-ph").hidden = has;
-      document.getElementById(c + "-x").hidden = !has;
     }
+    paintRoster();
   }
   function photoRef(c) { return photoDb && photoUid ? photoDb.doc("data/users/" + photoUid + "/portrait-" + c) : null; }
   function photoLocal(c) {
@@ -420,11 +479,27 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     var f = el.files[0]; el.value = "";
     shrink(f, function (data) { setPhoto(c, data); });
   });
+  /* tap a portrait that already has a photo: choose change / remove / cancel */
+  var sheetC = null, sheetEl = document.getElementById("sheet"), sheetBg = document.getElementById("sheet-bg");
+  function openSheet(c) { sheetC = c; sheetEl.hidden = false; sheetBg.hidden = false; document.getElementById("sheet-change").focus(); }
+  function closeSheet() { sheetEl.hidden = true; sheetBg.hidden = true; sheetC = null; }
   document.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest("[data-clearphoto]");
-    if (!b) return;
-    var c = b.getAttribute("data-clearphoto"); delete photos[c]; paintPhotos(); photoLocal(c); photoRemote(c);
+    var t = e.target.closest ? e.target : e.target.parentNode, lab = t.closest(".portrait");
+    if (!lab) return;
+    if (t.tagName === "INPUT") return;
+    var inp = lab.querySelector("[data-photo]"), c = inp && inp.getAttribute("data-photo");
+    if (c && photos[c]) { e.preventDefault(); openSheet(c); }
   });
+  document.getElementById("sheet-change").addEventListener("click", function () {
+    var c = sheetC; closeSheet(); if (c) document.getElementById(c + "-photo").click();
+  });
+  document.getElementById("sheet-remove").addEventListener("click", function () {
+    var c = sheetC; closeSheet();
+    if (c) { delete photos[c]; paintPhotos(); photoLocal(c); photoRemote(c); }
+  });
+  document.getElementById("sheet-cancel").addEventListener("click", closeSheet);
+  sheetBg.addEventListener("click", closeSheet);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheetC) closeSheet(); });
 
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) {
