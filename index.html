@@ -7,17 +7,24 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Warband">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>
-html { padding-top: env(safe-area-inset-top, 0px); }
-body { margin: 0; }
-[hidden] { display: none !important; }
-</style>
+<meta name="theme-color" content="#e8e8e6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121211" media="(prefers-color-scheme: dark)">
+<meta name="description" content="A phone-first warband sheet for Forbidden Psalm.">
+<meta property="og:title" content="Warband Sheet">
+<meta property="og:description" content="A phone-first warband sheet for Forbidden Psalm.">
+<meta property="og:image" content="https://28minismax.github.io/Warband/icon-512.png">
+<meta property="og:url" content="https://28minismax.github.io/Warband/">
 <title>Warband Sheet</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Pirata+One&family=Crimson+Pro:wght@400;600&display=swap">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
-/* Layout: one character per screen, thumb-reachable bottom tabs, stepper tiles for stats, ink-blot labels over rough-edged boxes. */
+@font-face { font-family: "UnifrakturCook"; font-weight: 700; font-style: normal; font-display: swap; src: url("unifrakturcook-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Pirata One"; font-weight: 400; font-style: normal; font-display: swap; src: url("pirata-one-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Crimson Pro"; font-weight: 400; font-style: normal; font-display: swap; src: url("crimson-pro-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Crimson Pro"; font-weight: 600; font-style: normal; font-display: swap; src: url("crimson-pro-latin-600-normal.woff2") format("woff2"); }
+
+/* Layout: one character per screen, thumb-reachable bottom tabs, a pinned XP/gold bar, stepper tiles for stats, ink-blot labels over rough-edged boxes. */
 :root {
   --bg: #e8e8e6;
   --ink: #0f0f0f;
@@ -40,13 +47,31 @@ body { margin: 0; }
   --bg: #121211; --ink: #ecebe6; --bar: #2b2b29; --rule: #5a5a56;
   --field: #1b1b1a; --muted: #a3a29c; --blood: #c8402f; color-scheme: dark;
 }
+[hidden] { display: none !important; }
 * { box-sizing: border-box; }
+html { background: var(--bg); }
 body {
-  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 18px;
-  padding-inline: 16px; padding-block: 12px 96px; min-height: 100%;
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 18px;
+  padding: 0 0 calc(88px + env(safe-area-inset-bottom, 0px)); min-height: 100%;
   -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
 }
-.wrap { max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 18px; }
+.wrap { max-width: 560px; margin-inline: auto; padding: 14px 16px 0; display: flex; flex-direction: column; gap: 18px; }
+
+/* pinned XP / gold bar */
+.purse {
+  position: sticky; top: 0; z-index: 6; background: var(--bg); border-bottom: 3px solid var(--ink);
+  padding: env(safe-area-inset-top, 0px) 16px 0;
+}
+.purse-in { max-width: 560px; margin-inline: auto; display: flex; align-items: center; gap: 8px; min-height: 56px; padding-block: 5px; }
+.chip {
+  display: flex; align-items: baseline; gap: 8px; flex: none; min-height: 46px; padding: 4px 14px 6px; cursor: pointer; touch-action: manipulation;
+  background: var(--field); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
+}
+.chip:active { background: var(--ink); color: var(--bg); }
+.chip .cl { font-family: var(--display); font-size: 20px; line-height: 1; }
+.chip .cv { font-family: var(--numeral); font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.status { flex: 1; min-width: 0; text-align: right; font-size: 12px; line-height: 1.2; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status b { color: var(--blood); font-weight: 600; }
 
 /* ink blot labels */
 .blot {
@@ -54,12 +79,10 @@ body {
   padding: 10px 22px 12px; display: inline-block; min-width: 0;
   clip-path: polygon(2% 22%, 6% 6%, 12% 16%, 20% 0, 28% 12%, 40% 2%, 52% 14%, 64% 0, 76% 12%, 88% 3%, 96% 16%, 100% 36%, 97% 54%, 100% 72%, 94% 88%, 86% 100%, 74% 90%, 62% 100%, 50% 92%, 38% 100%, 26% 90%, 14% 100%, 6% 88%, 2% 70%, 0 50%);
 }
-.blot.round { clip-path: none; border-radius: 50%; width: 64px; height: 64px; padding: 0; display: grid; place-items: center; font-size: 22px; flex: none; }
 .blot .cap { font-size: 1.45em; }
 
-.masthead { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; padding-bottom: 14px; border-bottom: 4px solid var(--ink); border-radius: 0 0 40px 6px / 0 0 5px 2px; }
+.masthead { padding-bottom: 14px; border-bottom: 4px solid var(--ink); border-radius: 0 0 40px 6px / 0 0 5px 2px; }
 .mrow { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.mrow.full { grid-column: 1 / -1; }
 .mrow .blot { font-size: 24px; flex: none; }
 .line {
   flex: 1; min-width: 0; width: 100%; background: transparent; color: var(--ink);
@@ -87,6 +110,8 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 }
 .namebar .field-label { margin: 0; font-size: 24px; flex: none; }
 .namebar input { flex: 1; min-width: 0; background: transparent; border: 0; font: 600 22px/1.2 var(--body); padding: 10px 2px; min-height: 48px; }
+.panel.is-fallen .namebar input { text-decoration: line-through; text-decoration-thickness: 2px; }
+.panel.is-fallen .portrait img { filter: grayscale(1); }
 
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .stat { background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px; padding: 8px 8px 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
@@ -107,8 +132,10 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .plate {
   position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); width: 58%; min-height: 40px;
   background: var(--field); border: 2px solid var(--ink); border-radius: 5px; text-align: center;
-  font: 700 24px/1 var(--numeral); padding: 6px 2px;
+  font: 700 24px/1 var(--numeral); padding: 6px 2px; font-variant-numeric: tabular-nums;
 }
+.plate.sm { font-size: 19px; padding-block: 9px; }
+.plate.zero { color: var(--blood); border-color: var(--blood); }
 .plate.shield { top: 42%; border: 0; background: transparent; }
 .plate:focus { outline: 3px solid var(--blood); }
 .hpctl { display: flex; align-items: center; gap: 10px; }
@@ -126,18 +153,9 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .item input { flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 1.5px solid var(--rule); border-radius: 0; padding: 10px 2px; min-height: 46px; font-size: 18px; }
 .item input:focus { outline: none; border-bottom: 3px solid var(--blood); }
 
-.panel[hidden] { display: none !important; }
 .panel { display: flex; flex-direction: column; gap: 18px; }
 .sect-head { display: flex; align-items: center; gap: 10px; }
 .sect-head .blot { font-size: 24px; }
-
-.openlink {
-  align-self: flex-start; font-family: var(--display); font-size: 18px; color: var(--ink);
-  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
-  min-height: 44px; display: inline-flex; align-items: center; margin-top: -6px;
-}
-.openlink:active { color: var(--blood); }
-.masthead[hidden], .openlink[hidden] { display: none; }
 
 /* portrait */
 .idrow { display: grid; grid-template-columns: 118px minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -154,34 +172,56 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .portrait .ph small { display: block; font-family: var(--body); font-size: 13px; color: var(--muted); margin-top: 4px; }
 .portrait input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .portrait:focus-within { outline: 3px solid var(--blood); outline-offset: 2px; }
+
+.toprow { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: -6px; }
 .backlink {
-  align-self: flex-start; background: transparent; border: 0; padding: 0 8px 0 0; min-height: 44px; margin-top: -6px;
+  background: transparent; border: 0; padding: 0 8px 0 0; min-height: 44px;
   font-family: var(--display); font-size: 20px; color: var(--ink); cursor: pointer; touch-action: manipulation;
   text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
 }
+.fallenbtn {
+  min-height: 44px; padding: 4px 16px 6px; cursor: pointer; touch-action: manipulation; background: transparent;
+  border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; font-family: var(--display); font-size: 19px; line-height: 1;
+}
+.fallenbtn[aria-pressed="true"] { background: var(--blood); border-color: var(--blood); color: #fff; }
+
+/* dialogs (bottom sheets) */
 .sheet-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, .5); z-index: 20; }
 .sheet {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 21; background: var(--bg); border-top: 4px solid var(--ink);
   padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px;
-  max-width: 560px; margin-inline: auto;
+  max-width: 560px; margin-inline: auto; max-height: 92vh; overflow-y: auto;
 }
 .sheet button {
   min-height: 52px; border: 2.5px solid var(--ink); background: var(--field); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
   font: 600 19px var(--body); cursor: pointer; touch-action: manipulation;
 }
+.sheet button:active { background: var(--ink); color: var(--bg); }
 .sheet .danger { color: var(--blood); border-color: var(--blood); }
-.sheet[hidden], .sheet-bg[hidden] { display: none; }
+.qgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.qgrid button { font-family: var(--numeral); font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.amtrow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto auto; gap: 8px; }
+.amtrow input { min-height: 52px; font-size: 20px; font-variant-numeric: tabular-nums; }
+.amtrow button { padding-inline: 14px; }
 
 /* warband roster */
-.tragedy { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; padding: 6px 10px 6px 14px; }
+.tragedy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; padding: 6px 10px 6px 14px; }
 .tragedy .tl { margin: 0; }
 .tctl { display: flex; align-items: center; gap: 10px; }
 .tctl .step { width: 40px; height: 40px; font-size: 22px; }
 .tnum { font-family: var(--numeral); font-size: 32px; line-height: 1; min-width: 1.6ch; text-align: center; font-variant-numeric: tabular-nums; }
-.resetbtn { border: 2.5px dashed var(--rule); background: transparent; border-radius: 8px; min-height: 52px; font: 600 17px var(--body); color: var(--muted); padding: 8px 14px; cursor: pointer; touch-action: manipulation; margin-top: 8px; }
+.restbtn { flex: 1 1 100%; min-height: 48px; margin: 2px 0 6px; border: 2.5px solid var(--ink); background: transparent; border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; font: 600 18px var(--body); cursor: pointer; touch-action: manipulation; }
+.restbtn:active { background: var(--ink); color: var(--bg); }
+.resetbtn, .actbtn { min-height: 52px; font: 600 17px var(--body); padding: 8px 14px; cursor: pointer; touch-action: manipulation; border-radius: 8px; }
+.resetbtn { border: 2.5px dashed var(--rule); background: transparent; color: var(--muted); }
 .resetbtn:active { border-color: var(--blood); color: var(--blood); }
+.actbtn { border: 2.5px solid var(--ink); background: var(--field); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; }
+.actbtn:active { background: var(--ink); color: var(--bg); }
 .reset-q { font-family: var(--display); font-size: 27px; line-height: 1.15; margin: 0; text-wrap: balance; }
 .reset-sub { margin: 0; color: var(--muted); font-size: 16px; }
+.reset-sub.warn { color: var(--blood); font-weight: 600; }
+.bgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.backup { display: flex; flex-direction: column; gap: 10px; }
 .notescell { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .notebox { position: relative; aspect-ratio: 4 / 5; width: 100%; }
 .notebox textarea { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; overflow: auto; border-width: 3px; padding: 10px; font-size: 17px; }
@@ -200,64 +240,101 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .tile .tn { font-family: var(--display); font-size: 24px; line-height: 1.05; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .tile .tm { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .tile .ts { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tile.fallen .pic { opacity: .55; }
+.tile.fallen .pic img { filter: grayscale(1); }
+.tile.fallen .tn { text-decoration: line-through; text-decoration-thickness: 2px; }
+.tile.fallen .tm { color: var(--blood); }
 
-/* bottom tabs */
+/* bottom tabs (scroll sideways once there are more than five heroes) */
 .tabs {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 5; background: var(--bg);
-  border-top: 4px solid var(--ink); display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+  border-top: 4px solid var(--ink); display: flex; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+.tabs::-webkit-scrollbar { display: none; }
 .tab {
-  background: transparent; border: 0; padding: 8px 2px 8px; min-height: 58px; min-width: 0;
+  flex: 0 0 calc(100% / 6); min-width: 56px; background: transparent; border: 0; padding: 8px 2px; min-height: 58px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer;
   touch-action: manipulation;
 }
 .tab .g { font-family: var(--display); font-size: 24px; line-height: 1; }
-.tab .t { font-size: 12px; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); padding-inline: 2px; }
+.tab .t { font-size: 13px; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); padding-inline: 2px; }
 .tab[aria-selected="true"] { background: var(--ink); color: var(--bg); }
 .tab[aria-selected="true"] .t { color: var(--bg); }
-.status { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 4px); right: 10px; font-size: 13px; color: var(--muted); font-family: var(--body); pointer-events: none; }
-.status b { color: var(--blood); font-weight: 600; }
+
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(78px + env(safe-area-inset-bottom, 0px)); z-index: 10;
+  max-width: min(92vw, 520px); background: var(--ink); color: var(--bg); padding: 10px 18px; cursor: pointer;
+  border-radius: 4px 9px 5px 10px / 9px 4px 10px 5px; font-size: 16px; line-height: 1.25; text-align: center;
+}
+.toast.bad { background: var(--blood); color: #fff; }
 
 @media (min-width: 560px) { .two { grid-template-columns: 1fr 1fr; } }
 @media (prefers-reduced-motion: no-preference) { .step { transition: background .12s, color .12s; } }
 </style>
 </head>
 <body>
-<div class="status" id="status" aria-live="polite"></div>
+<header class="purse">
+  <div class="purse-in">
+    <button type="button" class="chip" id="chip-xp" data-adjust="xp"><span class="cl">XP</span><span class="cv" id="v-xp">0</span></button>
+    <button type="button" class="chip" id="chip-gold" data-adjust="gold"><span class="cl">Gold</span><span class="cv" id="v-gold">0</span></button>
+    <div class="status" id="status"></div>
+  </div>
+</header>
 <main class="wrap" id="app">
   <section class="masthead" id="masthead" aria-label="Warband">
-    <div class="mrow full"><span class="blot"><span class="cap">W</span>arband</span><input class="line" id="warband" data-k="warband" type="text" autocomplete="off" aria-label="Warband name" placeholder="Name your warband"></div>
-    <div class="mrow"><span class="blot"><span class="cap">X</span>P</span><input class="line" id="xp" data-k="xp" type="text" inputmode="numeric" autocomplete="off" aria-label="Party XP" placeholder="0"></div>
-    <div class="mrow"><span class="blot round">Gold</span><input class="line" id="gold" data-k="gold" type="text" inputmode="numeric" autocomplete="off" aria-label="Gold" placeholder="0"></div>
+    <div class="mrow"><span class="blot"><span class="cap">W</span>arband</span><input class="line" id="warband" data-k="warband" type="text" autocomplete="off" aria-label="Warband name" placeholder="Name your warband"></div>
   </section>
   <div id="panels"></div>
 </main>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Sheet sections"></nav>
-<div class="sheet-bg" id="reset-bg" hidden></div>
-<div class="sheet" id="reset-sheet" role="alertdialog" aria-labelledby="reset-q" hidden>
-  <p class="reset-q" id="reset-q"></p>
-  <p class="reset-sub">This wipes every hero, the party page and all photos.</p>
-  <button type="button" class="danger" id="reset-yes">Let them be forgotten</button>
-  <button type="button" id="reset-no">Spare them</button>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- XP / gold adjuster -->
+<div class="sheet-bg" id="adj-bg" hidden></div>
+<div class="sheet" id="adj" role="dialog" aria-labelledby="adj-title" hidden>
+  <p class="reset-q" id="adj-title"></p>
+  <div class="qgrid">
+    <button type="button" data-q="1">+1</button><button type="button" data-q="5">+5</button><button type="button" data-q="10">+10</button>
+    <button type="button" data-q="-1">−1</button><button type="button" data-q="-5">−5</button><button type="button" data-q="-10">−10</button>
+  </div>
+  <div class="amtrow">
+    <input class="box" id="adj-amt" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Amount" aria-label="Custom amount">
+    <button type="button" data-adj="take">Take</button><button type="button" data-adj="add">Add</button><button type="button" data-adj="set">Set</button>
+  </div>
+  <button type="button" id="adj-done">Done</button>
 </div>
+
+<!-- generic confirm -->
+<div class="sheet-bg" id="cf-bg" hidden></div>
+<div class="sheet" id="cf" role="alertdialog" aria-labelledby="cf-q" aria-describedby="cf-sub" hidden>
+  <p class="reset-q" id="cf-q"></p>
+  <p class="reset-sub" id="cf-sub"></p>
+  <button type="button" id="cf-yes"></button>
+  <button type="button" id="cf-no"></button>
+</div>
+
+<!-- portrait options -->
 <div class="sheet-bg" id="sheet-bg" hidden></div>
 <div class="sheet" id="sheet" role="dialog" aria-label="Portrait options" hidden>
   <button type="button" id="sheet-change">Choose a new photo</button>
   <button type="button" class="danger" id="sheet-remove">Remove photo</button>
   <button type="button" id="sheet-cancel">Cancel</button>
 </div>
+<input type="file" id="bk-file" accept=".json,application/json" hidden>
 
 <script>
 (function () {
+  var MAXC = 12;
   var STATS = [["agility", "Agility"], ["presence", "Presence"], ["strength", "Strength"], ["toughness", "Toughness"]];
-  var LS = "warband-sheet-v1", LS_TAB = "warband-sheet-tab";
-  var ROMAN = ["I", "II", "III", "IV", "V"];
+  var LS = "warband-sheet-v1", LS_TAB = "warband-sheet-tab", LS_PREV = "warband-sheet-prev", LS_BK = "warband-sheet-backup";
+  var ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
+  var DAY = 86400000;
 
   function blank() {
-    var s = { warband: "", xp: "", gold: "", party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" } };
-    for (var i = 1; i <= 5; i++) {
-      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, tragedies: 0,
+    var s = { warband: "", xp: 0, gold: 0, count: 5, party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" } };
+    for (var i = 1; i <= MAXC; i++) {
+      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, maxhp: 0, tragedies: 0, fallen: false,
         right: "", right_dmg: "", left: "", left_dmg: "", feats: "", flaws: "", items: ["", "", "", "", "", "", "", ""] };
     }
     return s;
@@ -272,6 +349,26 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     });
     return base;
   }
+  /* older saves kept XP and gold as text */
+  function migrate(o) {
+    if (!o || typeof o !== "object") return o;
+    ["xp", "gold"].forEach(function (k) {
+      if (typeof o[k] === "string") { var n = parseInt(o[k].replace(/[^\d-]/g, ""), 10); o[k] = isNaN(n) ? 0 : n; }
+    });
+    return o;
+  }
+  function ni(v, lo, hi, d) { v = parseInt(v, 10); if (isNaN(v)) v = d; return Math.max(lo, Math.min(hi, v)); }
+  function sanitize(s) {
+    s.xp = ni(s.xp, 0, 9999999, 0); s.gold = ni(s.gold, 0, 9999999, 0); s.count = ni(s.count, 5, MAXC, 5);
+    for (var i = 1; i <= MAXC; i++) {
+      var h = s["c" + i];
+      STATS.forEach(function (st) { h[st[0]] = ni(h[st[0]], -9, 9, 0); });
+      h.hp = ni(h.hp, 0, 999, 0); h.maxhp = ni(h.maxhp, 0, 999, 0); h.tragedies = ni(h.tragedies, 0, 99, 0);
+      if (h.maxhp > 0 && h.hp > h.maxhp) h.hp = h.maxhp;
+    }
+    return s;
+  }
+  function fromRaw(o) { return sanitize(merge(blank(), migrate(o))); }
   function getPath(p) { return p.split(".").reduce(function (o, k) { return o == null ? o : o[k]; }, state); }
   function setPath(p, v) {
     var parts = p.split("."), o = state;
@@ -280,12 +377,10 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   }
 
   var state = blank();
-  try { var raw = localStorage.getItem(LS); if (raw) merge(state, JSON.parse(raw)); } catch (e) {}
+  try { var raw = localStorage.getItem(LS); if (raw) state = fromRaw(JSON.parse(raw)); } catch (e) {}
 
   /* ---------- build ---------- */
   var panels = document.getElementById("panels"), tabs = document.getElementById("tabs");
-
-  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
 
   var SHIELD = '<svg viewBox="0 0 120 112" aria-hidden="true"><path d="M14 8 C40 14 50 8 60 16 C70 8 80 14 106 8 L102 58 C98 84 78 98 60 106 C42 98 22 84 18 58 Z" fill="var(--field)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/></svg>';
   var HEART = '<svg viewBox="0 0 120 112" aria-hidden="true">' +
@@ -306,7 +401,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     var stats = STATS.map(function (s) {
       return '<div class="stat"><span class="nm">' + s[1] + '</span><div class="ctl">' +
         '<button type="button" class="step" data-step="' + c + '.' + s[0] + '" data-d="-1" aria-label="Decrease ' + s[1] + '">−</button>' +
-        '<span class="val" id="' + c + '-' + s[0] + '-v" data-show="' + c + '.' + s[0] + '" aria-live="polite"></span>' +
+        '<span class="val" data-show="' + c + '.' + s[0] + '" aria-live="polite"></span>' +
         '<button type="button" class="step" data-step="' + c + '.' + s[0] + '" data-d="1" aria-label="Increase ' + s[1] + '">+</button></div></div>';
     }).join("");
     var items = "";
@@ -318,8 +413,9 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<input class="box" id="' + c + '-' + key + '" data-k="' + c + '.' + key + '" type="text" autocomplete="off" placeholder="Weapon">' +
         '<input class="box" id="' + c + '-' + key + '_dmg" data-k="' + c + '.' + key + '_dmg" type="text" autocomplete="off" aria-label="' + label + ' damage" placeholder="d6"></div>';
     }
-    return '<section class="panel" id="p-' + c + '" role="tabpanel" hidden>' +
-      '<button type="button" class="backlink" data-tab="band">\u2039 Warband</button>' +
+    return '<section class="panel" id="p-' + c + '" role="tabpanel" aria-labelledby="t-' + c + '" hidden>' +
+      '<div class="toprow"><button type="button" class="backlink" data-tab="band">‹ Warband</button>' +
+      '<button type="button" class="fallenbtn" data-fallen="' + c + '" aria-pressed="false">† Fallen</button></div>' +
       '<div class="namebar"><label class="field-label" for="' + c + '-name"><span class="cap">N</span>ame:</label><input id="' + c + '-name" data-k="' + c + '.name" type="text" autocomplete="off" placeholder="Who is this?"></div>' +
       '<div class="idrow">' +
       '<div class="portrait-wrap"><label class="portrait" for="' + c + '-photo"><img id="' + c + '-img" alt="Portrait of hero ' + n + '" hidden>' +
@@ -330,13 +426,18 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<div class="vital"><span class="field-label">Armour</span><div class="art">' + SHIELD +
           '<input class="plate shield" id="' + c + '-armour" data-k="' + c + '.armour" type="text" autocomplete="off" aria-label="Armour" placeholder="–"></div></div>' +
         '<div class="vital"><span class="field-label">Health</span><div class="art">' + HEART +
-          '<div class="plate" id="' + c + '-hp-v" data-show="' + c + '.hp" aria-live="polite"></div></div>' +
+          '<div class="plate" data-show="' + c + '.hp" aria-live="polite"></div></div>' +
           '<div class="hpctl"><button type="button" class="step" data-step="' + c + '.hp" data-d="-1" aria-label="Lose 1 health">−</button>' +
           '<button type="button" class="step" data-step="' + c + '.hp" data-d="1" aria-label="Gain 1 health">+</button></div></div>' +
       '</div></div>' +
+      '<div class="tragedy"><span class="field-label tl"><span class="cap">M</span>ax Health</span><div class="tctl">' +
+        '<button type="button" class="step" data-step="' + c + '.maxhp" data-d="-1" aria-label="Lower maximum health">−</button>' +
+        '<span class="tnum" data-show="' + c + '.maxhp" aria-live="polite"></span>' +
+        '<button type="button" class="step" data-step="' + c + '.maxhp" data-d="1" aria-label="Raise maximum health">+</button></div>' +
+        '<button type="button" class="restbtn" data-rest="' + c + '" hidden>Rest — heal to full</button></div>' +
       '<div class="stats">' + stats + '</div>' +
       '<div class="tragedy"><span class="field-label tl"><span class="cap">T</span>ragedies</span><div class="tctl">' +
-        '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="-1" aria-label="Remove a tragedy">\u2212</button>' +
+        '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="-1" aria-label="Remove a tragedy">−</button>' +
         '<span class="tnum" data-show="' + c + '.tragedies" aria-live="polite"></span>' +
         '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="1" aria-label="Add a tragedy">+</button></div></div>' +
       '<div class="hands">' + hand("right", "Right") + hand("left", "Left") + '</div>' +
@@ -357,13 +458,26 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       blk("calamity", "Calamity", 72) + blk("equipment", "Party Equipment", 120);
   }
 
-  var html = '<section class="panel" id="p-band" role="tabpanel" hidden>' + partyBlocks() + '<div class="sect-head"><span class="blot"><span class="cap">H</span>eroes</span></div><div class="roster" id="roster"><div class="notescell" id="notescell"><div class="notebox"><textarea class="box" id="party-notes" data-k="party.notes" aria-label="Notes" placeholder="Notes"></textarea></div><label class="nlabel" for="party-notes">Notes</label></div></div><button type="button" class="resetbtn" id="reset-open">Start a new warband</button></section>';
-  var th = '<button type="button" class="tab" role="tab" id="t-band" data-tab="band" aria-selected="false"><span class="g">\u2630</span><span class="t">Warband</span></button>';
-  for (var n = 1; n <= 5; n++) {
-    html += charPanel(n);
-    th += '<button type="button" class="tab" role="tab" id="t-c' + n + '" data-tab="c' + n + '" aria-selected="false"><span class="g">' + ROMAN[n - 1] + '</span><span class="t" id="tl-c' + n + '"></span></button>';
+  var html = '<section class="panel" id="p-band" role="tabpanel" aria-labelledby="t-band" hidden>' + partyBlocks() +
+    '<div class="sect-head"><span class="blot"><span class="cap">H</span>eroes</span></div>' +
+    '<div class="roster" id="roster"><div class="notescell" id="notescell"><div class="notebox"><textarea class="box" id="party-notes" data-k="party.notes" aria-label="Notes" placeholder="Notes"></textarea></div><label class="nlabel" for="party-notes">Notes</label></div></div>' +
+    '<button type="button" class="actbtn" id="recruit">Recruit another hero</button>' +
+    '<div class="backup"><div class="sect-head"><span class="blot"><span class="cap">B</span>ackup</span></div>' +
+      '<p class="reset-sub" id="backup-note"></p>' +
+      '<div class="bgrid"><button type="button" class="actbtn" id="bk-save">Save backup file</button><button type="button" class="actbtn" id="bk-copy">Copy backup</button>' +
+      '<button type="button" class="actbtn" id="bk-load">Restore from file</button><button type="button" class="actbtn" id="bk-paste">Paste backup</button></div></div>' +
+    '<button type="button" class="actbtn" id="restore-open" hidden></button>' +
+    '<button type="button" class="resetbtn" id="reset-open">Start a new warband</button></section>';
+  for (var n = 1; n <= MAXC; n++) html += charPanel(n);
+  panels.innerHTML = html;
+
+  function buildTabs() {
+    var th = '<button type="button" class="tab" role="tab" id="t-band" data-tab="band" aria-controls="p-band" aria-selected="false" tabindex="-1"><span class="g">☰</span><span class="t">Warband</span></button>';
+    for (var n = 1; n <= state.count; n++) {
+      th += '<button type="button" class="tab" role="tab" id="t-c' + n + '" data-tab="c' + n + '" aria-controls="p-c' + n + '" aria-selected="false" tabindex="-1"><span class="g">' + ROMAN[n - 1] + '</span><span class="t" id="tl-c' + n + '"></span></button>';
+    }
+    tabs.innerHTML = th;
   }
-  panels.innerHTML = html; tabs.innerHTML = th;
 
   /* ---------- render ---------- */
   function grow(t) { if (t.id === "party-notes") return; t.style.height = "auto"; t.style.height = Math.max(t.scrollHeight + 4, 0) + "px"; }
@@ -377,52 +491,82 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     });
     document.querySelectorAll("[data-show]").forEach(function (el) {
       var k = el.getAttribute("data-show"), v = getPath(k);
-      el.textContent = /\.(hp|tragedies)$/.test(k) ? String(v) : fmt(v);
+      if (/\.hp$/.test(k)) {
+        var mx = getPath(k.replace(/hp$/, "maxhp"));
+        el.textContent = mx > 0 ? v + "/" + mx : String(v);
+        el.classList.toggle("sm", mx > 0); el.classList.toggle("zero", mx > 0 && v === 0);
+      } else if (/\.maxhp$/.test(k)) el.textContent = v > 0 ? String(v) : "–";
+      else if (/\.tragedies$/.test(k)) el.textContent = String(v);
+      else el.textContent = fmt(v);
     });
-    for (var n = 1; n <= 5; n++) {
-      var nm = (state["c" + n].name || "").trim();
-      document.getElementById("tl-c" + n).textContent = nm ? nm.split(/\s+/)[0] : "Hero " + n;
+    document.getElementById("v-xp").textContent = state.xp;
+    document.getElementById("v-gold").textContent = state.gold;
+    document.getElementById("chip-xp").setAttribute("aria-label", "XP: " + state.xp + ". Tap to adjust");
+    document.getElementById("chip-gold").setAttribute("aria-label", "Gold: " + state.gold + ". Tap to adjust");
+    for (var n = 1; n <= MAXC; n++) {
+      var c = "c" + n, h = state[c];
+      var tl = document.getElementById("tl-" + c);
+      if (tl) { var nm = (h.name || "").trim(); tl.textContent = (h.fallen ? "† " : "") + (nm ? nm.split(/\s+/)[0] : "Hero " + n); }
+      var pn = document.getElementById("p-" + c);
+      if (pn) pn.classList.toggle("is-fallen", !!h.fallen);
     }
+    document.querySelectorAll("[data-fallen]").forEach(function (b) { b.setAttribute("aria-pressed", state[b.getAttribute("data-fallen")].fallen ? "true" : "false"); });
+    document.querySelectorAll("[data-rest]").forEach(function (b) { var h = state[b.getAttribute("data-rest")]; b.hidden = !(h.maxhp > 0 && h.hp < h.maxhp); });
     paintRoster();
+    paintBackup();
+    if (adjKey) paintAdj();
   }
   function paintRoster() {
     var r = document.getElementById("roster"); if (!r) return;
     Array.prototype.forEach.call(r.querySelectorAll(".tile"), function (x) { x.remove(); });
     var nc = document.getElementById("notescell");
     function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-    for (var n = 1; n <= 5; n++) {
-      var c = "c" + n, h = state[c], b = mk("button", "tile"); b.type = "button"; b.setAttribute("data-tab", c);
+    for (var n = 1; n <= state.count; n++) {
+      var c = "c" + n, h = state[c], b = mk("button", "tile" + (h.fallen ? " fallen" : "")); b.type = "button"; b.setAttribute("data-tab", c);
       var nm = (h.name || "").trim() || "Hero " + n;
-      b.setAttribute("aria-label", "Open " + nm);
+      b.setAttribute("aria-label", "Open " + nm + (h.fallen ? " (fallen)" : ""));
       var pic = mk("div", "pic");
       if (photos[c]) { var im = document.createElement("img"); im.src = photos[c]; im.alt = ""; pic.appendChild(im); }
       else pic.appendChild(mk("span", "no", ROMAN[n - 1]));
       b.appendChild(pic);
       b.appendChild(mk("div", "tn", nm));
-      b.appendChild(mk("div", "tm", "HP " + h.hp + (h.armour ? "  \u00b7  Armour " + h.armour : "")));
+      if (h.fallen) b.appendChild(mk("div", "tm", "† Fallen"));
+      else b.appendChild(mk("div", "tm", "HP " + h.hp + (h.maxhp > 0 ? "/" + h.maxhp : "") + (h.armour ? "  ·  Armour " + h.armour : "")));
       b.appendChild(mk("div", "ts", "Agi " + fmt(h.agility) + "  Pre " + fmt(h.presence) + "  Str " + fmt(h.strength) + "  Tou " + fmt(h.toughness)));
       if (h.tragedies > 0) b.appendChild(mk("div", "ts", "Tragedies " + h.tragedies));
       r.insertBefore(b, nc);
     }
+    document.getElementById("recruit").hidden = state.count >= MAXC;
+    document.getElementById("recruit").textContent = "Recruit another hero (" + state.count + " of " + MAXC + ")";
   }
 
   var tab = "band";
+  try { tab = localStorage.getItem(LS_TAB) || "band"; } catch (e) {}
+  function validTab(t) { if (t === "band") return true; var m = /^c(\d+)$/.exec(t); return !!m && +m[1] >= 1 && +m[1] <= state.count; }
+  function tabOrder() { var o = ["band"]; for (var n = 1; n <= state.count; n++) o.push("c" + n); return o; }
   function showTab(t) {
-    if (!document.getElementById("p-" + t)) t = "band";
+    if (!validTab(t)) t = "band";
     tab = t;
-    var mh = document.getElementById("masthead"), ol = document.getElementById("openlink");
-    if (mh) mh.hidden = t !== "band"; if (ol) ol.hidden = t !== "band";
+    document.getElementById("masthead").hidden = t !== "band";
     document.querySelectorAll(".panel").forEach(function (p) { p.hidden = p.id !== "p-" + t; });
-    document.querySelectorAll(".tab").forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === t ? "true" : "false"); });
+    document.querySelectorAll(".tab").forEach(function (b) {
+      var on = b.getAttribute("data-tab") === t;
+      b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
+      if (on) tabs.scrollLeft = b.offsetLeft - (tabs.clientWidth - b.offsetWidth) / 2;
+    });
     try { localStorage.setItem(LS_TAB, t); } catch (e) {}
     document.querySelectorAll("#p-" + t + " textarea").forEach(grow);
     window.scrollTo(0, 0);
+  }
+  function step(dir) {
+    var o = tabOrder(), i = o.indexOf(tab) + dir;
+    if (i >= 0 && i < o.length) showTab(o[i]);
   }
 
   /* ---------- saving ---------- */
   var statusEl = document.getElementById("status"), dbDoc = null, timer = null, inflight = false, again = false, dirty = false;
   function setStatus(msg, warn) { statusEl.innerHTML = warn ? "<b>" + msg + "</b>" : msg; }
-  function lsSave() { try { localStorage.setItem(LS, JSON.stringify(state)); } catch (e) {} }
+  function lsSave() { try { localStorage.setItem(LS, JSON.stringify(state)); return true; } catch (e) { setStatus("Couldn't save on this device", true); return false; } }
   function touch() {
     dirty = true; lsSave(); setStatus("Saving…");
     clearTimeout(timer); timer = setTimeout(flush, 700);
@@ -431,19 +575,26 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     if (!dbDoc) { dirty = false; setStatus("Saved on this device only"); return; }
     if (inflight) { again = true; return; }
     inflight = true; dirty = false;
-    try { await dbDoc.set({ v: 1, state: JSON.parse(JSON.stringify(state)) }); setStatus("Saved"); }
+    try { await dbDoc.set({ v: 2, state: JSON.parse(JSON.stringify(state)) }); setStatus("Saved"); }
     catch (e) { setStatus("Not saved to your account", true); }
     inflight = false;
     if (again || dirty) { again = false; flush(); }
   }
 
+  var toastEl = document.getElementById("toast"), toastT = null;
+  function toast(msg, bad) {
+    toastEl.textContent = msg; toastEl.className = "toast" + (bad ? " bad" : ""); toastEl.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.hidden = true; }, bad ? 7000 : 3500);
+  }
+  toastEl.addEventListener("click", function () { toastEl.hidden = true; });
+
   /* ---------- portraits ---------- */
   var photos = {}, photoDb = null, photoUid = null;
-  for (var pi = 1; pi <= 5; pi++) {
+  for (var pi = 1; pi <= MAXC; pi++) {
     try { var pv = localStorage.getItem(LS + "-ph-c" + pi); if (pv) photos["c" + pi] = pv; } catch (e) {}
   }
   function paintPhotos() {
-    for (var n = 1; n <= 5; n++) {
+    for (var n = 1; n <= MAXC; n++) {
       var c = "c" + n, img = document.getElementById(c + "-img"), has = !!photos[c];
       if (has) img.src = photos[c]; else img.removeAttribute("src");
       img.hidden = !has;
@@ -484,7 +635,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     photoRemote(c);
   }
   async function loadPhotos() {
-    for (var n = 1; n <= 5; n++) {
+    for (var n = 1; n <= MAXC; n++) {
       var c = "c" + n, ref = photoRef(c);
       try {
         var snap = await ref.get(), d = snap.exists ? snap.data() : null;
@@ -500,27 +651,188 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     var f = el.files[0]; el.value = "";
     shrink(f, function (data) { setPhoto(c, data); });
   });
-  /* tap a portrait that already has a photo: choose change / remove / cancel */
-  var sheetC = null, sheetEl = document.getElementById("sheet"), sheetBg = document.getElementById("sheet-bg");
-  function openSheet(c) { sheetC = c; sheetEl.hidden = false; sheetBg.hidden = false; document.getElementById("sheet-change").focus(); }
-  function closeSheet() { sheetEl.hidden = true; sheetBg.hidden = true; sheetC = null; }
-  document.addEventListener("click", function (e) {
-    var t = e.target.closest ? e.target : e.target.parentNode, lab = t.closest(".portrait");
-    if (!lab) return;
-    if (t.tagName === "INPUT") return;
-    var inp = lab.querySelector("[data-photo]"), c = inp && inp.getAttribute("data-photo");
-    if (c && photos[c]) { e.preventDefault(); openSheet(c); }
+
+  /* ---------- dialogs: one at a time, focus kept inside, focus returned afterwards ---------- */
+  var dlg = null, opener = null, cfResolve = null, sheetC = null, adjKey = null;
+  var DIALOGS = {
+    portrait: { sheet: document.getElementById("sheet"), bg: document.getElementById("sheet-bg") },
+    confirm: { sheet: document.getElementById("cf"), bg: document.getElementById("cf-bg") },
+    adjust: { sheet: document.getElementById("adj"), bg: document.getElementById("adj-bg") }
+  };
+  function focusables(root) {
+    return Array.prototype.filter.call(root.querySelectorAll("button, input, textarea, [tabindex]"), function (e) { return !e.disabled && !e.hidden && e.tabIndex >= 0; });
+  }
+  function openDlg(name, focusEl) {
+    if (dlg) closeDlg();
+    opener = document.activeElement; dlg = name;
+    var d = DIALOGS[name]; d.sheet.hidden = false; d.bg.hidden = false;
+    (focusEl || focusables(d.sheet)[0]).focus();
+  }
+  function closeDlg() {
+    if (!dlg) return;
+    var d = DIALOGS[dlg], was = dlg; dlg = null;
+    d.sheet.hidden = true; d.bg.hidden = true;
+    if (was === "confirm" && cfResolve) { var r = cfResolve; cfResolve = null; r(false); }
+    if (was === "adjust") adjKey = null;
+    if (was === "portrait") sheetC = null;
+    if (opener && document.body.contains(opener)) { try { opener.focus(); } catch (e) {} }
+    opener = null;
+  }
+  Object.keys(DIALOGS).forEach(function (k) { DIALOGS[k].bg.addEventListener("click", closeDlg); });
+  document.addEventListener("keydown", function (e) {
+    if (!dlg) return;
+    if (e.key === "Escape") { closeDlg(); return; }
+    if (e.key !== "Tab") return;
+    var f = focusables(DIALOGS[dlg].sheet); if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (!DIALOGS[dlg].sheet.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+    else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   });
+
+  function confirmSheet(o) {
+    return new Promise(function (resolve) {
+      document.getElementById("cf-q").textContent = o.q;
+      document.getElementById("cf-sub").textContent = o.sub || "";
+      var yes = document.getElementById("cf-yes"), no = document.getElementById("cf-no");
+      yes.textContent = o.yes; no.textContent = o.no; yes.className = o.danger ? "danger" : "";
+      cfResolve = resolve; openDlg("confirm", no);
+    });
+  }
+  function confirmYes() { if (!cfResolve) return; var r = cfResolve; cfResolve = null; closeDlg(); r(true); }
+  document.getElementById("cf-yes").addEventListener("click", confirmYes);
+  document.getElementById("cf-no").addEventListener("click", closeDlg);
+
+  /* portrait options */
   document.getElementById("sheet-change").addEventListener("click", function () {
-    var c = sheetC; closeSheet(); if (c) document.getElementById(c + "-photo").click();
+    var c = sheetC; closeDlg(); if (c) document.getElementById(c + "-photo").click();
   });
   document.getElementById("sheet-remove").addEventListener("click", function () {
-    var c = sheetC; closeSheet();
+    var c = sheetC; closeDlg();
     if (c) { delete photos[c]; paintPhotos(); photoLocal(c); photoRemote(c); }
   });
-  document.getElementById("sheet-cancel").addEventListener("click", closeSheet);
-  sheetBg.addEventListener("click", closeSheet);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && sheetC) closeSheet(); });
+  document.getElementById("sheet-cancel").addEventListener("click", closeDlg);
+
+  /* ---------- XP and gold ---------- */
+  var amtEl = document.getElementById("adj-amt");
+  function paintAdj() { document.getElementById("adj-title").textContent = (adjKey === "xp" ? "XP" : "Gold") + ": " + state[adjKey]; }
+  function openAdjust(key) { adjKey = key; amtEl.value = ""; paintAdj(); openDlg("adjust"); }
+  function adjust(mode, amt) {
+    var cur = state[adjKey], next = cur;
+    if (mode === "add") next = cur + amt; else if (mode === "take") next = cur - amt; else next = amt;
+    next = Math.max(0, Math.min(9999999, next));
+    if (next === cur) return;
+    state[adjKey] = next; paint(); touch();
+  }
+  function amtValue() { var n = parseInt(amtEl.value.replace(/[^\d]/g, ""), 10); return isNaN(n) ? null : n; }
+  document.getElementById("adj-done").addEventListener("click", closeDlg);
+  amtEl.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); var v = amtValue(); if (v != null) { adjust("add", v); amtEl.value = ""; } } });
+
+  /* ---------- backup, restore, undo ---------- */
+  function readPrev() {
+    try {
+      var p = JSON.parse(localStorage.getItem(LS_PREV) || "null");
+      if (!p || typeof p.t !== "number" || !p.state) return null;
+      if (Date.now() - p.t > 30 * DAY) { localStorage.removeItem(LS_PREV); return null; }
+      return p;
+    } catch (e) { return null; }
+  }
+  /* keep a copy of what's on screen so a wipe or restore can be undone */
+  function stash() {
+    try { localStorage.setItem(LS_PREV, JSON.stringify({ t: Date.now(), state: state, photos: photos })); return true; }
+    catch (e) { return false; }
+  }
+  function ago(t) {
+    var m = Math.round((Date.now() - t) / 60000);
+    if (m < 1) return "just now";
+    if (m < 60) return m + (m === 1 ? " minute ago" : " minutes ago");
+    var h = Math.round(m / 60); if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+    var d = Math.round(h / 24); return d + (d === 1 ? " day ago" : " days ago");
+  }
+  function hasData() { return JSON.stringify(state) !== JSON.stringify(blank()) || Object.keys(photos).length > 0; }
+  function paintBackup() {
+    var note = document.getElementById("backup-note"), t = 0;
+    try { t = parseInt(localStorage.getItem(LS_BK) || "0", 10) || 0; } catch (e) {}
+    var stale = hasData() && (!t || Date.now() - t > 14 * DAY);
+    note.className = "reset-sub" + (stale ? " warn" : "");
+    note.textContent = t ? "Last backup: " + ago(t) + ". Your sheet lives only in this browser." : "Never backed up. Your sheet lives only in this browser, so save a copy somewhere safe.";
+    var prev = readPrev(), rb = document.getElementById("restore-open");
+    rb.hidden = !prev;
+    if (prev) rb.textContent = "Swap back to the previous warband (saved " + ago(prev.t) + ")";
+  }
+  function markBackup() { try { localStorage.setItem(LS_BK, String(Date.now())); } catch (e) {} paintBackup(); }
+  function backupJson() { return JSON.stringify({ app: "warband-sheet", format: 2, saved: new Date().toISOString(), state: state, photos: photos }); }
+  function backupName() {
+    var slug = (state.warband || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "sheet";
+    return "warband-" + slug + "-" + new Date().toISOString().slice(0, 10) + ".json";
+  }
+  async function saveBackup() {
+    var json = backupJson(), name = backupName();
+    try {
+      var file = new File([json], name, { type: "application/json" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Warband backup" }); markBackup(); return; }
+    } catch (e) { if (e && e.name === "AbortError") return; }
+    var url = URL.createObjectURL(new Blob([json], { type: "application/json" })), a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    markBackup(); toast("Backup saved");
+  }
+  async function copyBackup() {
+    var json = backupJson(), ok = false;
+    try { await navigator.clipboard.writeText(json); ok = true; } catch (e) {}
+    if (!ok) {
+      try { var ta = document.createElement("textarea"); ta.value = json; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); ok = document.execCommand("copy"); ta.remove(); } catch (e) {}
+    }
+    if (ok) { markBackup(); toast("Backup copied. Paste it somewhere safe."); } else toast("Couldn't copy. Use Save backup file instead.", true);
+  }
+  function applyState(ns, np) {
+    var old = Object.keys(photos);
+    state = fromRaw(ns);
+    photos = {};
+    Object.keys(np || {}).forEach(function (c) {
+      var m = /^c(\d+)$/.exec(c);
+      if (m && +m[1] >= 1 && +m[1] <= MAXC && typeof np[c] === "string" && np[c].indexOf("data:image/") === 0 && np[c].length < 900000) photos[c] = np[c];
+    });
+    lsSave();
+    var all = {}; old.concat(Object.keys(photos)).forEach(function (c) { all[c] = 1; });
+    var full = true;
+    Object.keys(all).forEach(function (c) { if (!photoLocal(c)) full = false; });
+    buildTabs(); paint(); paintPhotos(); showTab(validTab(tab) ? tab : "band"); touch();
+    Object.keys(all).forEach(function (c) { photoRemote(c); });
+    if (!full) setStatus("Some photos are too big to keep on this device", true);
+  }
+  async function importObject(obj) {
+    if (!obj || obj.app !== "warband-sheet" || !obj.state || typeof obj.state !== "object") { toast("That isn't a Warband backup.", true); return; }
+    var ok = await confirmSheet({ q: "Replace this warband with the backup?", sub: "What's on screen now is kept for 30 days, so you can swap back.", yes: "Restore backup", no: "Keep what I have", danger: true });
+    if (!ok) return;
+    if (!stash()) { toast("Not enough room to keep an undo copy. Save a backup file first.", true); return; }
+    applyState(obj.state, obj.photos); toast("Backup restored");
+  }
+  document.getElementById("bk-save").addEventListener("click", saveBackup);
+  document.getElementById("bk-copy").addEventListener("click", copyBackup);
+  document.getElementById("bk-load").addEventListener("click", function () { document.getElementById("bk-file").click(); });
+  document.getElementById("bk-file").addEventListener("change", function (e) {
+    var f = e.target.files && e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    if (f.size > 25 * 1024 * 1024) { toast("That file is too big to be a backup.", true); return; }
+    var r = new FileReader();
+    r.onload = function () { var o = null; try { o = JSON.parse(r.result); } catch (err) {} importObject(o); };
+    r.onerror = function () { toast("Couldn't read that file.", true); };
+    r.readAsText(f);
+  });
+  document.getElementById("bk-paste").addEventListener("click", async function () {
+    var txt = ""; try { txt = await navigator.clipboard.readText(); } catch (e) { toast("Couldn't read the clipboard. Use Restore from file.", true); return; }
+    var o = null; try { o = JSON.parse(txt); } catch (e) {}
+    importObject(o);
+  });
+  document.getElementById("restore-open").addEventListener("click", async function () {
+    var prev = readPrev(); if (!prev) { paintBackup(); return; }
+    var ok = await confirmSheet({ q: "Raise the old warband from the grave?", sub: "It swaps places with what's on screen now. Do it again to swap back.", yes: "Raise them", no: "Leave them buried", danger: false });
+    if (!ok) return;
+    var cur = { t: Date.now(), state: state, photos: photos };
+    try { localStorage.setItem(LS_PREV, JSON.stringify(cur)); } catch (e) { toast("Not enough room to swap. Save a backup file first.", true); return; }
+    applyState(prev.state, prev.photos); toast("Previous warband restored");
+  });
 
   /* ---------- new warband ---------- */
   var QUESTIONS = [
@@ -533,26 +845,20 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     "Forget them? The dead are used to it.",
     "Throw it all away? Gold is only slow dirt."
   ];
-  var lastQ = -1, resetSheet = document.getElementById("reset-sheet"), resetBg = document.getElementById("reset-bg");
-  function openReset() {
+  var lastQ = -1;
+  document.getElementById("reset-open").addEventListener("click", async function () {
     var i; do { i = Math.floor(Math.random() * QUESTIONS.length); } while (i === lastQ && QUESTIONS.length > 1);
-    lastQ = i; document.getElementById("reset-q").textContent = QUESTIONS[i];
-    resetSheet.hidden = false; resetBg.hidden = false; document.getElementById("reset-no").focus();
-  }
-  function closeReset() { resetSheet.hidden = true; resetBg.hidden = true; }
-  async function doReset() {
-    closeReset();
-    state = blank(); lsSave();
-    var had = Object.keys(photos);
-    photos = {}; had.forEach(function (c) { photoLocal(c); });
-    paint(); paintPhotos(); showTab("band"); touch();
-    for (var k = 0; k < had.length; k++) await photoRemote(had[k]);
-  }
-  document.getElementById("reset-open").addEventListener("click", openReset);
-  document.getElementById("reset-no").addEventListener("click", closeReset);
-  resetBg.addEventListener("click", closeReset);
-  document.getElementById("reset-yes").addEventListener("click", doReset);
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !resetSheet.hidden) closeReset(); });
+    lastQ = i;
+    var ok = await confirmSheet({ q: QUESTIONS[i], sub: "This wipes every hero, the party page and all photos. You can swap them back for the next 30 days.", yes: "Let them be forgotten", no: "Spare them", danger: true });
+    if (!ok) return;
+    if (!stash()) { toast("Not enough room to keep an undo copy. Save a backup file first.", true); return; }
+    applyState(blank(), {}); showTab("band"); toast("Wiped. You can swap the old warband back below.");
+  });
+
+  document.getElementById("recruit").addEventListener("click", function () {
+    if (state.count >= MAXC) return;
+    state.count++; buildTabs(); paint(); showTab("c" + state.count); touch();
+  });
 
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) {
@@ -564,22 +870,88 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     touch();
   });
   document.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest("[data-step]");
+    var t = e.target.closest ? e.target : e.target.parentNode;
+
+    var lab = t.closest(".portrait");
+    if (lab) {
+      if (t.tagName === "INPUT") return;
+      var inp = lab.querySelector("[data-photo]"), pc = inp && inp.getAttribute("data-photo");
+      if (pc && photos[pc]) { e.preventDefault(); sheetC = pc; openDlg("portrait"); }
+      return;
+    }
+
+    var b = t.closest("[data-step]");
     if (b) {
-      var k = b.getAttribute("data-step"), d = parseInt(b.getAttribute("data-d"), 10), cur = getPath(k) || 0;
-      var next = cur + d;
-      if (/\.(hp|tragedies)$/.test(k)) next = Math.max(next, 0); else next = Math.max(-9, Math.min(9, next));
+      var k = b.getAttribute("data-step"), d = parseInt(b.getAttribute("data-d"), 10), cur = getPath(k) || 0, next = cur + d;
+      var cc = k.split(".")[0], h = state[cc];
+      if (/\.hp$/.test(k)) { next = Math.max(0, next); if (h.maxhp > 0) next = Math.min(next, h.maxhp); }
+      else if (/\.maxhp$/.test(k)) {
+        next = Math.max(0, Math.min(999, next));
+        /* first tap on a hero with no max yet: start from their current health instead of dragging it down to 1 */
+        if (cur === 0 && d > 0 && h.hp > 0) next = Math.max(next, h.hp);
+        if (cur === 0 && h.hp === 0 && next > 0) h.hp = next;
+        else if (next > 0 && h.hp > next) h.hp = next;
+      }
+      else if (/\.tragedies$/.test(k)) next = Math.max(0, next);
+      else next = Math.max(-9, Math.min(9, next));
       setPath(k, next); paint(); touch(); return;
     }
-    var t = e.target.closest && e.target.closest("[data-tab]");
-    if (t) showTab(t.getAttribute("data-tab"));
+
+    var ad = t.closest("[data-adjust]");
+    if (ad) { openAdjust(ad.getAttribute("data-adjust")); return; }
+    var q = t.closest("[data-q]");
+    if (q) { var qv = parseInt(q.getAttribute("data-q"), 10); adjust(qv >= 0 ? "add" : "take", Math.abs(qv)); return; }
+    var aj = t.closest("[data-adj]");
+    if (aj) { var v = amtValue(); if (v == null) { amtEl.focus(); return; } adjust(aj.getAttribute("data-adj"), v); amtEl.value = ""; return; }
+
+    var fb = t.closest("[data-fallen]");
+    if (fb) { var fc = fb.getAttribute("data-fallen"); state[fc].fallen = !state[fc].fallen; paint(); touch(); return; }
+    var rb = t.closest("[data-rest]");
+    if (rb) { var rc = state[rb.getAttribute("data-rest")]; rc.hp = rc.maxhp; paint(); touch(); return; }
+
+    var tt = t.closest("[data-tab]");
+    if (tt) showTab(tt.getAttribute("data-tab"));
   });
+
+  /* tab bar: arrow keys */
+  tabs.addEventListener("keydown", function (e) {
+    var o = tabOrder(), i = o.indexOf(tab), j = -1;
+    if (e.key === "ArrowRight") j = Math.min(o.length - 1, i + 1);
+    else if (e.key === "ArrowLeft") j = Math.max(0, i - 1);
+    else if (e.key === "Home") j = 0;
+    else if (e.key === "End") j = o.length - 1;
+    if (j < 0) return;
+    e.preventDefault(); showTab(o[j]);
+    var el = document.getElementById("t-" + o[j]); if (el) el.focus();
+  });
+
+  /* swipe left/right to move between the warband page and heroes */
+  var sx = 0, sy = 0, st = 0, sOn = false;
+  document.addEventListener("touchstart", function (e) {
+    var t0 = e.touches[0];
+    sOn = e.touches.length === 1 && !dlg && !!e.target.closest("#app") && !/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+    sx = t0.clientX; sy = t0.clientY; st = Date.now();
+  }, { passive: true });
+  document.addEventListener("touchend", function (e) {
+    if (!sOn) return; sOn = false;
+    var t0 = e.changedTouches[0], dx = t0.clientX - sx, dy = t0.clientY - sy;
+    if (Date.now() - st > 700 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8) return;
+    if (dx > 0 && sx < 24) return; /* leave the iOS back-swipe edge alone */
+    if (window.getSelection && String(window.getSelection())) return;
+    step(dx < 0 ? 1 : -1);
+  }, { passive: true });
+
   window.addEventListener("resize", function () { document.querySelectorAll("#p-" + tab + " textarea").forEach(grow); });
 
-  paint(); paintPhotos(); showTab(tab);
+  buildTabs(); paint(); paintPhotos(); showTab(tab);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { document.querySelectorAll("#p-" + tab + " textarea").forEach(grow); });
 
-  /* ---------- account sync (optional) ---------- */
+  /* offline support */
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+
+  /* ---------- account sync (optional, only inside Claude) ---------- */
   (async function () {
     if (!window.claude || !window.claude.use) { setStatus("Saved on this device only"); return; }
     try {
@@ -594,25 +966,24 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
           first = false; dbDoc = ref;
           if (remote && remote.state) {
             if (dirty) { /* local edits made before load win */ flush(); }
-            else { state = merge(blank(), remote.state); lsSave(); paint(); }
+            else { state = fromRaw(remote.state); lsSave(); buildTabs(); paint(); showTab(validTab(tab) ? tab : "band"); }
             setStatus("Saved");
           } else {
-            var hasLocal = JSON.stringify(state) !== JSON.stringify(blank());
-            if (hasLocal) flush(); else setStatus("Saved");
+            if (hasData()) flush(); else setStatus("Saved");
           }
           return;
         }
         if (snap.metadata.hasPendingWrites || dirty || inflight) return;
         var a = document.activeElement;
         if (a && /INPUT|TEXTAREA/.test(a.tagName)) return;
-        if (remote && remote.state && JSON.stringify(remote.state) !== JSON.stringify(state)) {
-          state = merge(blank(), remote.state); lsSave(); paint();
+        if (remote && remote.state) {
+          var nxt = fromRaw(remote.state);
+          if (JSON.stringify(nxt) !== JSON.stringify(state)) { state = nxt; lsSave(); buildTabs(); paint(); showTab(validTab(tab) ? tab : "band"); }
         }
       }, function () { dbDoc = null; setStatus("Saved on this device only"); });
     } catch (e) { setStatus("Saved on this device only"); }
   })();
 })();
 </script>
-
 </body>
 </html>

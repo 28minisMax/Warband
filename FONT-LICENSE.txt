@@ -1,0 +1,8 @@
+Fonts bundled with this app (latin subsets, via Fontsource):
+
+- Crimson Pro        (c) The Crimson Pro Project Authors
+- Pirata One         (c) The Pirata One Project Authors
+- UnifrakturCook     (c) The UnifrakturCook Project Authors
+
+All three are licensed under the SIL Open Font License, Version 1.1
+https://openfontlicense.org/open-font-license-official-text/
