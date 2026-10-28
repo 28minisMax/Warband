@@ -62,7 +62,20 @@ body {
   position: sticky; top: 0; z-index: 6; background: var(--bg); border-bottom: 3px solid var(--ink);
   padding: env(safe-area-inset-top, 0px) 16px 0;
 }
-.purse-in { max-width: 560px; margin-inline: auto; display: flex; align-items: center; gap: 8px; min-height: 56px; padding-block: 5px; }
+.purse-in { max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 6px; padding-block: 6px; }
+.phases { display: flex; gap: 6px; }
+.phase {
+  flex: 1 1 0; min-width: 0; min-height: 44px; padding: 4px 2px 6px; cursor: pointer; touch-action: manipulation;
+  background: var(--field); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
+  font-family: var(--display); font-size: 21px; line-height: 1;
+}
+.phase.word { flex-grow: 1.6; }
+.phase[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.phase.add { flex: 0 0 42px; border-style: dashed; border-color: var(--rule); background: transparent; color: var(--muted); }
+.purse-row { display: flex; align-items: center; gap: 8px; min-height: 46px; }
+.roundnote { flex: 1.2; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.roundnote .rn { font-family: var(--display); font-size: 22px; line-height: 1; }
+.roundnote .rs { font-size: 14px; line-height: 1.1; color: var(--muted); }
 .chip {
   display: flex; align-items: baseline; gap: 8px; flex: none; min-height: 46px; padding: 4px 14px 6px; cursor: pointer; touch-action: manipulation;
   background: var(--field); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
@@ -245,6 +258,32 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .tile.fallen .tn { text-decoration: line-through; text-decoration-thickness: 2px; }
 .tile.fallen .tm { color: var(--blood); }
 
+/* hero page buttons, roster badge */
+.topbtns { display: flex; gap: 8px; }
+.topbtns .fallenbtn { padding-inline: 12px; font-size: 18px; }
+.actv[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.panel.is-fallen .actv { display: none; }
+.tile .badge {
+  position: absolute; top: 6px; right: 6px; width: 30px; height: 30px; display: grid; place-items: center;
+  background: var(--ink); color: var(--bg); font: 700 20px/1 var(--numeral); border-radius: 4px 8px 5px 9px / 8px 4px 9px 5px;
+}
+
+/* omens */
+.omens { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.omen {
+  display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 6px 12px; text-align: left; cursor: pointer; touch-action: manipulation;
+  background: var(--field); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px;
+}
+.omen:active { background: var(--bar); }
+.omchk {
+  width: 32px; height: 32px; flex: none; display: grid; place-items: center; border: 2.5px solid var(--ink); background: var(--bg);
+  border-radius: 3px 6px 4px 7px / 6px 3px 7px 4px; font: 700 22px/1 var(--numeral); color: var(--blood);
+}
+.omn { font-family: var(--display); font-size: 22px; line-height: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.omen.used { background: transparent; }
+.omen.used .omn { text-decoration: line-through; text-decoration-thickness: 2px; color: var(--muted); }
+.sect-head .reset-sub { margin-left: 4px; }
+
 /* bottom tabs (scroll sideways once there are more than five heroes) */
 .tabs {
   position: fixed; inset-inline: 0; bottom: 0; z-index: 5; background: var(--bg);
@@ -276,9 +315,13 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 <body>
 <header class="purse">
   <div class="purse-in">
-    <button type="button" class="chip" id="chip-xp" data-adjust="xp"><span class="cl">XP</span><span class="cv" id="v-xp">0</span></button>
-    <button type="button" class="chip" id="chip-gold" data-adjust="gold"><span class="cl">Gold</span><span class="cv" id="v-gold">0</span></button>
-    <div class="status" id="status"></div>
+    <div class="phases" id="phases" role="group" aria-label="Scenario phase"></div>
+    <div class="purse-row">
+      <button type="button" class="chip" id="chip-xp" data-adjust="xp"><span class="cl">XP</span><span class="cv" id="v-xp">0</span></button>
+      <button type="button" class="chip" id="chip-gold" data-adjust="gold"><span class="cl">Gold</span><span class="cv" id="v-gold">0</span></button>
+      <div class="roundnote" id="roundnote" hidden></div>
+      <div class="status" id="status"></div>
+    </div>
   </div>
 </header>
 <main class="wrap" id="app">
@@ -326,15 +369,16 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 <script>
 (function () {
   var MAXC = 12;
+  var OMENS = [["banality", "Banality"], ["confidence", "Confidence"], ["devastation", "Devastation"], ["fate", "Fate"], ["grace", "Grace"], ["greed", "Greed"]];
   var STATS = [["agility", "Agility"], ["presence", "Presence"], ["strength", "Strength"], ["toughness", "Toughness"]];
   var LS = "warband-sheet-v1", LS_TAB = "warband-sheet-tab", LS_PREV = "warband-sheet-prev", LS_BK = "warband-sheet-backup";
   var ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   var DAY = 86400000;
 
   function blank() {
-    var s = { warband: "", xp: 0, gold: 0, count: 5, party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" } };
+    var s = { warband: "", xp: 0, gold: 0, count: 5, phase: "pre", rounds: 4, party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" }, omens: { banality: false, confidence: false, devastation: false, fate: false, grace: false, greed: false } };
     for (var i = 1; i <= MAXC; i++) {
-      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, maxhp: 0, tragedies: 0, fallen: false,
+      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, maxhp: 0, tragedies: 0, fallen: false, activated: false,
         right: "", right_dmg: "", left: "", left_dmg: "", feats: "", flaws: "", items: ["", "", "", "", "", "", "", ""] };
     }
     return s;
@@ -360,11 +404,14 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   function ni(v, lo, hi, d) { v = parseInt(v, 10); if (isNaN(v)) v = d; return Math.max(lo, Math.min(hi, v)); }
   function sanitize(s) {
     s.xp = ni(s.xp, 0, 9999999, 0); s.gold = ni(s.gold, 0, 9999999, 0); s.count = ni(s.count, 5, MAXC, 5);
+    s.rounds = ni(s.rounds, 4, 8, 4);
+    if (!(s.phase === "pre" || s.phase === "post" || (/^\d+$/.test(s.phase) && +s.phase >= 1 && +s.phase <= s.rounds))) s.phase = "pre";
     for (var i = 1; i <= MAXC; i++) {
       var h = s["c" + i];
       STATS.forEach(function (st) { h[st[0]] = ni(h[st[0]], -9, 9, 0); });
       h.hp = ni(h.hp, 0, 999, 0); h.maxhp = ni(h.maxhp, 0, 999, 0); h.tragedies = ni(h.tragedies, 0, 99, 0);
       if (h.maxhp > 0 && h.hp > h.maxhp) h.hp = h.maxhp;
+      if (h.fallen) h.activated = false;
     }
     return s;
   }
@@ -414,8 +461,9 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<input class="box" id="' + c + '-' + key + '_dmg" data-k="' + c + '.' + key + '_dmg" type="text" autocomplete="off" aria-label="' + label + ' damage" placeholder="d6"></div>';
     }
     return '<section class="panel" id="p-' + c + '" role="tabpanel" aria-labelledby="t-' + c + '" hidden>' +
-      '<div class="toprow"><button type="button" class="backlink" data-tab="band">‹ Warband</button>' +
-      '<button type="button" class="fallenbtn" data-fallen="' + c + '" aria-pressed="false">† Fallen</button></div>' +
+      '<div class="toprow"><button type="button" class="backlink" data-tab="band">‹ Warband</button><div class="topbtns">' +
+      '<button type="button" class="fallenbtn actv" data-activated="' + c + '" aria-pressed="false">✓ Activated</button>' +
+      '<button type="button" class="fallenbtn" data-fallen="' + c + '" aria-pressed="false">† Fallen</button></div></div>' +
       '<div class="namebar"><label class="field-label" for="' + c + '-name"><span class="cap">N</span>ame:</label><input id="' + c + '-name" data-k="' + c + '.name" type="text" autocomplete="off" placeholder="Who is this?"></div>' +
       '<div class="idrow">' +
       '<div class="portrait-wrap"><label class="portrait" for="' + c + '-photo"><img id="' + c + '-img" alt="Portrait of hero ' + n + '" hidden>' +
@@ -446,7 +494,18 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<div><label class="field-label" for="' + c + '-flaws"><span class="cap">F</span>laws <small>&amp; Injury</small></label><textarea class="box" id="' + c + '-flaws" data-k="' + c + '.flaws" placeholder="Flaws and injuries"></textarea></div>' +
       '</div>' +
       '<div><span class="field-label"><span class="cap">I</span>tems</span><div class="items">' + items + '</div></div>' +
+      '<button type="button" class="resetbtn" data-remove="' + n + '"' + (n > 6 ? '' : ' hidden') + '>Remove this hero</button>' +
     '</section>';
+  }
+
+  function omensBlock() {
+    var tiles = OMENS.map(function (o) {
+      return '<button type="button" class="omen" data-omen="' + o[0] + '" role="checkbox" aria-checked="false">' +
+        '<span class="omchk" aria-hidden="true"></span><span class="omn">' + o[1] + '</span></button>';
+    }).join("");
+    return '<div><div class="sect-head"><span class="blot"><span class="cap">O</span>mens</span><span class="reset-sub" id="omcount"></span></div>' +
+      '<div class="omens">' + tiles + '</div>' +
+      '<button type="button" class="actbtn" id="omen-clear" style="margin-top:10px;width:100%" hidden>Mark all unused</button></div>';
   }
 
   function partyBlocks() {
@@ -455,7 +514,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<textarea class="box" style="margin-top:10px;min-height:' + rows + 'px" id="party-' + key + '" data-k="party.' + key + '" aria-label="' + label + '"></textarea></div>';
     }
     return '<div class="scrolls">' + blk("scroll1", "Scroll", 84) + blk("scroll2", "Scroll", 84) + '</div>' +
-      blk("calamity", "Calamity", 72) + blk("equipment", "Party Equipment", 120);
+      blk("calamity", "Calamity", 72) + omensBlock() + blk("equipment", "Party Equipment", 120);
   }
 
   var html = '<section class="panel" id="p-band" role="tabpanel" aria-labelledby="t-band" hidden>' + partyBlocks() +
@@ -471,11 +530,18 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   for (var n = 1; n <= MAXC; n++) html += charPanel(n);
   panels.innerHTML = html;
 
+  function heroOrder() {
+    var live = [], dead = [];
+    for (var n = 1; n <= state.count; n++) (state["c" + n].fallen ? dead : live).push("c" + n);
+    return live.concat(dead);
+  }
+
   function buildTabs() {
     var th = '<button type="button" class="tab" role="tab" id="t-band" data-tab="band" aria-controls="p-band" aria-selected="false" tabindex="-1"><span class="g">☰</span><span class="t">Warband</span></button>';
-    for (var n = 1; n <= state.count; n++) {
+    heroOrder().forEach(function (c) {
+      var n = +c.slice(1);
       th += '<button type="button" class="tab" role="tab" id="t-c' + n + '" data-tab="c' + n + '" aria-controls="p-c' + n + '" aria-selected="false" tabindex="-1"><span class="g">' + ROMAN[n - 1] + '</span><span class="t" id="tl-c' + n + '"></span></button>';
-    }
+    });
     tabs.innerHTML = th;
   }
 
@@ -506,28 +572,62 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     for (var n = 1; n <= MAXC; n++) {
       var c = "c" + n, h = state[c];
       var tl = document.getElementById("tl-" + c);
-      if (tl) { var nm = (h.name || "").trim(); tl.textContent = (h.fallen ? "† " : "") + (nm ? nm.split(/\s+/)[0] : "Hero " + n); }
+      if (tl) { var nm = (h.name || "").trim(); tl.textContent = (h.fallen ? "† " : h.activated ? "✓ " : "") + (nm ? nm.split(/\s+/)[0] : "Hero " + n); }
       var pn = document.getElementById("p-" + c);
       if (pn) pn.classList.toggle("is-fallen", !!h.fallen);
     }
+    document.querySelectorAll("[data-activated]").forEach(function (b) { b.setAttribute("aria-pressed", state[b.getAttribute("data-activated")].activated ? "true" : "false"); });
     document.querySelectorAll("[data-fallen]").forEach(function (b) { b.setAttribute("aria-pressed", state[b.getAttribute("data-fallen")].fallen ? "true" : "false"); });
     document.querySelectorAll("[data-rest]").forEach(function (b) { var h = state[b.getAttribute("data-rest")]; b.hidden = !(h.maxhp > 0 && h.hp < h.maxhp); });
+    paintOmens();
+    paintPhases();
     paintRoster();
     paintBackup();
     if (adjKey) paintAdj();
+  }
+  function paintOmens() {
+    var used = 0;
+    document.querySelectorAll("[data-omen]").forEach(function (b) {
+      var on = !!state.omens[b.getAttribute("data-omen")];
+      b.setAttribute("aria-checked", on ? "true" : "false"); b.classList.toggle("used", on);
+      b.querySelector(".omchk").textContent = on ? "\u2715" : "";
+      if (on) used++;
+    });
+    document.getElementById("omcount").textContent = used + " of " + OMENS.length + " used";
+    document.getElementById("omen-clear").hidden = used === 0;
+  }
+  var builtRounds = -1;
+  function paintPhases() {
+    if (builtRounds !== state.rounds) {
+      var ph = '<button type="button" class="phase word" data-phase="pre" aria-label="Before the scenario">Pre</button>';
+      for (var r = 1; r <= state.rounds; r++) ph += '<button type="button" class="phase" data-phase="' + r + '" aria-label="Round ' + r + '">' + r + '</button>';
+      ph += '<button type="button" class="phase word" data-phase="post" aria-label="After the scenario">Post</button>';
+      if (state.rounds < 8) ph += '<button type="button" class="phase add" data-addround aria-label="Add an extra round">+</button>';
+      document.getElementById("phases").innerHTML = ph; builtRounds = state.rounds;
+    }
+    var p = state.phase, inRound = p !== "pre" && p !== "post";
+    document.querySelectorAll("[data-phase]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-phase") === p ? "true" : "false"); });
+    document.getElementById("chip-xp").hidden = inRound; document.getElementById("chip-gold").hidden = inRound;
+    var note = document.getElementById("roundnote"); note.hidden = !inRound;
+    if (inRound) {
+      var live = 0, done = 0;
+      for (var n = 1; n <= state.count; n++) { var hh = state["c" + n]; if (!hh.fallen) { live++; if (hh.activated) done++; } }
+      note.innerHTML = '<span class="rn">Round ' + p + ' of ' + state.rounds + '</span><span class="rs">' + done + ' of ' + live + ' activated</span>';
+    }
   }
   function paintRoster() {
     var r = document.getElementById("roster"); if (!r) return;
     Array.prototype.forEach.call(r.querySelectorAll(".tile"), function (x) { x.remove(); });
     var nc = document.getElementById("notescell");
     function mk(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-    for (var n = 1; n <= state.count; n++) {
-      var c = "c" + n, h = state[c], b = mk("button", "tile" + (h.fallen ? " fallen" : "")); b.type = "button"; b.setAttribute("data-tab", c);
+    heroOrder().forEach(function (c) {
+      var n = +c.slice(1), h = state[c], b = mk("button", "tile" + (h.fallen ? " fallen" : "")); b.type = "button"; b.setAttribute("data-tab", c);
       var nm = (h.name || "").trim() || "Hero " + n;
-      b.setAttribute("aria-label", "Open " + nm + (h.fallen ? " (fallen)" : ""));
+      b.setAttribute("aria-label", "Open " + nm + (h.fallen ? " (fallen)" : h.activated ? " (activated)" : ""));
       var pic = mk("div", "pic");
       if (photos[c]) { var im = document.createElement("img"); im.src = photos[c]; im.alt = ""; pic.appendChild(im); }
       else pic.appendChild(mk("span", "no", ROMAN[n - 1]));
+      if (h.activated && !h.fallen) pic.appendChild(mk("span", "badge", "✓"));
       b.appendChild(pic);
       b.appendChild(mk("div", "tn", nm));
       if (h.fallen) b.appendChild(mk("div", "tm", "† Fallen"));
@@ -535,7 +635,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       b.appendChild(mk("div", "ts", "Agi " + fmt(h.agility) + "  Pre " + fmt(h.presence) + "  Str " + fmt(h.strength) + "  Tou " + fmt(h.toughness)));
       if (h.tragedies > 0) b.appendChild(mk("div", "ts", "Tragedies " + h.tragedies));
       r.insertBefore(b, nc);
-    }
+    });
     document.getElementById("recruit").hidden = state.count >= MAXC;
     document.getElementById("recruit").textContent = "Recruit another hero (" + state.count + " of " + MAXC + ")";
   }
@@ -543,17 +643,20 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   var tab = "band";
   try { tab = localStorage.getItem(LS_TAB) || "band"; } catch (e) {}
   function validTab(t) { if (t === "band") return true; var m = /^c(\d+)$/.exec(t); return !!m && +m[1] >= 1 && +m[1] <= state.count; }
-  function tabOrder() { var o = ["band"]; for (var n = 1; n <= state.count; n++) o.push("c" + n); return o; }
-  function showTab(t) {
-    if (!validTab(t)) t = "band";
-    tab = t;
-    document.getElementById("masthead").hidden = t !== "band";
-    document.querySelectorAll(".panel").forEach(function (p) { p.hidden = p.id !== "p-" + t; });
+  function tabOrder() { return ["band"].concat(heroOrder()); }
+  function markTabs(t) {
     document.querySelectorAll(".tab").forEach(function (b) {
       var on = b.getAttribute("data-tab") === t;
       b.setAttribute("aria-selected", on ? "true" : "false"); b.tabIndex = on ? 0 : -1;
       if (on) tabs.scrollLeft = b.offsetLeft - (tabs.clientWidth - b.offsetWidth) / 2;
     });
+  }
+  function showTab(t) {
+    if (!validTab(t)) t = "band";
+    tab = t;
+    document.getElementById("masthead").hidden = t !== "band";
+    document.querySelectorAll(".panel").forEach(function (p) { p.hidden = p.id !== "p-" + t; });
+    markTabs(t);
     try { localStorage.setItem(LS_TAB, t); } catch (e) {}
     document.querySelectorAll("#p-" + t + " textarea").forEach(grow);
     window.scrollTo(0, 0);
@@ -581,12 +684,13 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     if (again || dirty) { again = false; flush(); }
   }
 
-  var toastEl = document.getElementById("toast"), toastT = null;
-  function toast(msg, bad) {
+  var toastEl = document.getElementById("toast"), toastT = null, toastFn = null;
+  function toast(msg, bad, onTap) {
+    toastFn = onTap || null;
     toastEl.textContent = msg; toastEl.className = "toast" + (bad ? " bad" : ""); toastEl.hidden = false;
-    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.hidden = true; }, bad ? 7000 : 3500);
+    clearTimeout(toastT); toastT = setTimeout(function () { toastEl.hidden = true; }, bad ? 7000 : onTap ? 6000 : 3500);
   }
-  toastEl.addEventListener("click", function () { toastEl.hidden = true; });
+  toastEl.addEventListener("click", function () { toastEl.hidden = true; var f = toastFn; toastFn = null; if (f) f(); });
 
   /* ---------- portraits ---------- */
   var photos = {}, photoDb = null, photoUid = null;
@@ -758,7 +862,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     note.textContent = t ? "Last backup: " + ago(t) + ". Your sheet lives only in this browser." : "Never backed up. Your sheet lives only in this browser, so save a copy somewhere safe.";
     var prev = readPrev(), rb = document.getElementById("restore-open");
     rb.hidden = !prev;
-    if (prev) rb.textContent = "Swap back to the previous warband (saved " + ago(prev.t) + ")";
+    if (prev) rb.textContent = "Undo: swap back to the earlier version (saved " + ago(prev.t) + ")";
   }
   function markBackup() { try { localStorage.setItem(LS_BK, String(Date.now())); } catch (e) {} paintBackup(); }
   function backupJson() { return JSON.stringify({ app: "warband-sheet", format: 2, saved: new Date().toISOString(), state: state, photos: photos }); }
@@ -860,6 +964,48 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     state.count++; buildTabs(); paint(); showTab("c" + state.count); touch();
   });
 
+  /* ---------- scenario phase ---------- */
+  function actSnap() { var a = []; for (var n = 1; n <= MAXC; n++) if (state["c" + n].activated) a.push(n); return a; }
+  function setPhase(p, rounds) {
+    if (p === state.phase) return;
+    var prev = { phase: state.phase, rounds: state.rounds, act: actSnap() };
+    state.phase = p;
+    if (p === "pre") state.rounds = 4;
+    if (rounds) state.rounds = rounds;
+    for (var n = 1; n <= MAXC; n++) state["c" + n].activated = false;
+    paint(); touch();
+    if (prev.act.length) toast("Activations cleared. Tap to undo.", false, function () {
+      state.phase = prev.phase; state.rounds = prev.rounds;
+      prev.act.forEach(function (n) { state["c" + n].activated = true; });
+      paint(); touch();
+    });
+  }
+
+  /* ---------- remove a hero (only heroes past the sixth) ---------- */
+  async function removeHero(n) {
+    if (n <= 6 || n > state.count) return;
+    var nm = (state["c" + n].name || "").trim() || "Hero " + n;
+    var yes = await confirmSheet({ q: "Remove " + nm + "?", sub: "They leave the sheet and any heroes after them move up. You can swap back for 30 days.", yes: "Remove hero", no: "Keep them", danger: true });
+    if (!yes) return;
+    if (!stash()) { toast("Not enough room to keep an undo copy. Save a backup file first.", true); return; }
+    var last = state.count;
+    for (var k = n; k < last; k++) {
+      state["c" + k] = state["c" + (k + 1)];
+      if (photos["c" + (k + 1)]) photos["c" + k] = photos["c" + (k + 1)]; else delete photos["c" + k];
+    }
+    state["c" + last] = blank()["c" + last]; delete photos["c" + last];
+    state.count--;
+    for (var j = n; j <= last; j++) { photoLocal("c" + j); photoRemote("c" + j); }
+    buildTabs(); paint(); paintPhotos(); showTab("band"); touch();
+    toast(nm + " removed. Tap to undo.", false, function () { document.getElementById("restore-open").click(); });
+  }
+
+  /* ---------- omens ---------- */
+  document.getElementById("omen-clear").addEventListener("click", function () {
+    OMENS.forEach(function (o) { state.omens[o[0]] = false; });
+    paint(); touch();
+  });
+
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) {
     var el = e.target, k = el.getAttribute && el.getAttribute("data-k");
@@ -905,9 +1051,20 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     if (aj) { var v = amtValue(); if (v == null) { amtEl.focus(); return; } adjust(aj.getAttribute("data-adj"), v); amtEl.value = ""; return; }
 
     var fb = t.closest("[data-fallen]");
-    if (fb) { var fc = fb.getAttribute("data-fallen"); state[fc].fallen = !state[fc].fallen; paint(); touch(); return; }
+    if (fb) { var fc = fb.getAttribute("data-fallen"); state[fc].fallen = !state[fc].fallen; if (state[fc].fallen) state[fc].activated = false; buildTabs(); paint(); markTabs(tab); touch(); return; }
     var rb = t.closest("[data-rest]");
     if (rb) { var rc = state[rb.getAttribute("data-rest")]; rc.hp = rc.maxhp; paint(); touch(); return; }
+
+    var ph = t.closest("[data-phase]");
+    if (ph) { setPhase(ph.getAttribute("data-phase")); return; }
+    if (t.closest("[data-addround]")) { if (state.rounds < 8) setPhase(String(state.rounds + 1), state.rounds + 1); return; }
+    var av = t.closest("[data-activated]");
+    if (av) { var ac = av.getAttribute("data-activated"); state[ac].activated = !state[ac].activated; paint(); touch(); return; }
+    var rm = t.closest("[data-remove]");
+    if (rm) { removeHero(+rm.getAttribute("data-remove")); return; }
+
+    var oc = t.closest("[data-omen]");
+    if (oc) { var ok = oc.getAttribute("data-omen"); state.omens[ok] = !state.omens[ok]; paint(); touch(); return; }
 
     var tt = t.closest("[data-tab]");
     if (tt) showTab(tt.getAttribute("data-tab"));
