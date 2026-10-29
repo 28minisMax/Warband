@@ -63,15 +63,19 @@ body {
   padding: env(safe-area-inset-top, 0px) 16px 0;
 }
 .purse-in { max-width: 560px; margin-inline: auto; display: flex; flex-direction: column; gap: 6px; padding-block: 6px; }
-.phases { display: flex; gap: 6px; }
+.phases { display: flex; gap: 4px; }
 .phase {
   flex: 1 1 0; min-width: 0; min-height: 44px; padding: 4px 2px 6px; cursor: pointer; touch-action: manipulation;
   background: var(--field); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px;
   font-family: var(--display); font-size: 21px; line-height: 1;
 }
-.phase.word { flex-grow: 1.6; }
+.phase.word { flex-grow: 1.3; font-size: 19px; }
 .phase[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.phase.add { flex: 0 0 42px; border-style: dashed; border-color: var(--rule); background: transparent; color: var(--muted); }
+.addround {
+  flex: none; min-height: 44px; padding: 4px 12px 6px; cursor: pointer; touch-action: manipulation; background: transparent; color: var(--ink);
+  border: 2.5px dashed var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; font-family: var(--display); font-size: 19px; line-height: 1;
+}
+.addround:active { background: var(--ink); color: var(--bg); }
 .purse-row { display: flex; align-items: center; gap: 8px; min-height: 46px; }
 .roundnote { flex: 1.2; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .roundnote .rn { font-family: var(--display); font-size: 22px; line-height: 1; }
@@ -258,6 +262,63 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .tile.fallen .tn { text-decoration: line-through; text-decoration-thickness: 2px; }
 .tile.fallen .tm { color: var(--blood); }
 
+/* conditions, d20 roller, armour, feats, equipment */
+.fxn { font-size: 13px; line-height: 1.2; font-weight: 600; color: var(--blood); text-align: center; }
+.fxn:empty { display: none; }
+.tragedy .fxn { flex: 1 1 100%; text-align: left; }
+.conds, .armrow { display: flex; flex-wrap: wrap; gap: 8px; }
+.conds { margin-top: 2px; }
+.cond { min-height: 44px; padding: 4px 14px 6px; cursor: pointer; touch-action: manipulation; background: var(--field); color: var(--ink); border: 2.5px solid var(--ink); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; font: 400 19px/1 var(--display); }
+.cond[aria-pressed="true"] { background: var(--blood); border-color: var(--blood); color: #fff; }
+.cond.tog[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.roller { background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px; padding: 0 12px 12px; }
+.roller summary { min-height: 48px; display: flex; align-items: center; cursor: pointer; font-family: var(--display); font-size: 20px; }
+.rlgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 8px 0; }
+.rl { display: flex; flex-direction: column; align-items: center; gap: 4px; font-family: var(--display); font-size: 17px; min-width: 0; }
+.rl input { text-align: center; padding: 6px 2px; min-height: 44px; font-size: 18px; }
+.rlp { min-height: 1.3em; font: 700 18px var(--numeral); }
+.armsec { display: flex; flex-direction: column; gap: 8px; }
+.armhead { display: flex; align-items: baseline; justify-content: space-between; }
+.armhead .field-label { margin: 0; }
+.armtot { font-family: var(--display); font-size: 20px; }
+.armtot b { font: 700 28px var(--numeral); }
+.armother { display: flex; align-items: center; gap: 10px; }
+.armother label { font-family: var(--display); font-size: 18px; flex: none; }
+.armother input { flex: 1; min-height: 48px; }
+.plate.shield { display: grid; place-items: center; }
+.fxb { margin: 0; font-size: 14px; font-weight: 600; color: var(--blood); }
+.scard.flaw { border-style: dashed; }
+.step.sm { width: 36px; height: 36px; font-size: 20px; }
+.iu { display: flex; align-items: center; gap: 4px; flex: none; }
+.iuv { font: 700 22px var(--numeral); min-width: 1.3ch; text-align: center; }
+.iun { font-style: normal; font-size: 13px; color: var(--muted); }
+.eqsec { display: flex; flex-direction: column; gap: 8px; }
+.slots { font-family: var(--display); font-size: 21px; }
+.slots b { font: 700 24px var(--numeral); }
+.slots.over, .slots.over b { color: var(--blood); }
+.sldet { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 14px; color: var(--muted); }
+.sldet b { color: var(--ink); font: 700 20px var(--numeral); min-width: 1.2ch; text-align: center; }
+.tile .cnd { color: var(--blood); font-weight: 600; }
+.legal { margin: 6px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.legal a { color: inherit; }
+
+/* scrolls and weapons on the hero page */
+.sclist { display: flex; flex-direction: column; gap: 10px; }
+.scard { background: var(--field); border: 2.5px solid var(--ink); border-radius: 3px 8px 4px 9px / 8px 3px 9px 4px; padding: 8px 6px 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.scard.unclean { border-color: var(--blood); }
+.sctop { display: flex; align-items: center; gap: 8px; }
+.scn { flex: 1; min-width: 0; font-family: var(--display); font-size: 23px; line-height: 1.05; }
+.sctag { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.scd { margin: 0; padding-right: 6px; font-size: 16px; line-height: 1.3; }
+.scuse { align-self: flex-start; min-height: 40px; padding: 4px 14px; cursor: pointer; touch-action: manipulation; background: transparent; border: 2px solid var(--rule); border-radius: 3px 7px 4px 8px / 7px 3px 8px 4px; font: 600 15px var(--body); color: var(--muted); }
+.scuse[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.scard.used .scn { text-decoration: line-through; text-decoration-thickness: 2px; color: var(--muted); }
+.scadd, .wsel { min-height: 48px; font: 600 17px var(--body); padding: 8px 10px; }
+.hand .wother, .hand .winfo { grid-column: 1 / -1; }
+.winfo { display: flex; flex-direction: column; gap: 3px; font-size: 15px; line-height: 1.3; color: var(--muted); border-left: 3px solid var(--ink); padding: 2px 0 2px 10px; }
+.winfo b { color: var(--ink); font-weight: 600; }
+.winfo .chk { color: var(--blood); }
+
 /* hero page buttons, roster badge */
 .topbtns { display: flex; gap: 8px; }
 .topbtns .fallenbtn { padding-inline: 12px; font-size: 18px; }
@@ -309,6 +370,20 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 .toast.bad { background: var(--blood); color: #fff; }
 
 @media (min-width: 560px) { .two { grid-template-columns: 1fr 1fr; } }
+#printarea { display: none; }
+@media print {
+  html, body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+  body > *:not(#printarea) { display: none !important; }
+  #printarea { display: block; font: 12pt/1.35 Georgia, serif; color: #000; }
+  #printarea h1 { font-size: 20pt; margin: 0 0 4pt; }
+  #printarea h2 { font-size: 15pt; margin: 0 0 2pt; }
+  .pcard { break-inside: avoid; border: 1.5pt solid #000; padding: 6pt 8pt; margin: 0 0 8pt; }
+  .pcard > div { margin-top: 2pt; }
+  .phead { display: flex; gap: 8pt; align-items: flex-start; }
+  .phead img { width: 56pt; height: 70pt; object-fit: cover; border: 1pt solid #000; }
+  .pst { font-weight: bold; }
+  #printarea .legal { color: #000; font-size: 8pt; }
+}
 @media (prefers-reduced-motion: no-preference) { .step { transition: background .12s, color .12s; } }
 </style>
 </head>
@@ -320,6 +395,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       <button type="button" class="chip" id="chip-xp" data-adjust="xp"><span class="cl">XP</span><span class="cv" id="v-xp">0</span></button>
       <button type="button" class="chip" id="chip-gold" data-adjust="gold"><span class="cl">Gold</span><span class="cv" id="v-gold">0</span></button>
       <div class="roundnote" id="roundnote" hidden></div>
+      <button type="button" class="addround" id="addround" data-addround hidden>+ Round</button>
       <div class="status" id="status"></div>
     </div>
   </div>
@@ -332,6 +408,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 </main>
 <nav class="tabs" id="tabs" role="tablist" aria-label="Sheet sections"></nav>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div id="printarea" aria-hidden="true"></div>
 
 <!-- XP / gold adjuster -->
 <div class="sheet-bg" id="adj-bg" hidden></div>
@@ -370,16 +447,196 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 (function () {
   var MAXC = 12;
   var OMENS = [["banality", "Banality"], ["confidence", "Confidence"], ["devastation", "Devastation"], ["fate", "Fate"], ["grace", "Grace"], ["greed", "Greed"]];
+  var MAXS = 8;
+  function escH(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+  /* Scrolls: id (c = clean, u = unclean, then the d44 roll), name, short reminder (not the full rules text) */
+  var SCROLLS = [
+    ["c11", "Hope's Last Breath", "Heals a model within 1 inch for 1D6 HP. Can't be used on downed or dead models."],
+    ["c12", "Will of the Optimistic", "Target adds an extra 1D6 to its next test."],
+    ["c13", "Not Dead Yet", "Wakes a dead model with 1 HP, but it gains a new Flaw."],
+    ["c14", "Second Wind", "Target gains 1D6 extra HP until the end of the scenario. The reader loses 2 HP each time. Can't target the reader or downed models."],
+    ["c21", "Visions of Tomorrow", "Target must flee, using the Morale rules."],
+    ["c22", "Shield of the Faithless", "Target can't be hit by ranged attacks for 1 round."],
+    ["c23", "False Dawn", "Target gives off light like a lantern for 5 rounds."],
+    ["c24", "Mind Blast", "Target must pass a Presence test or be Dazed for 1 round."],
+    ["c31", "Golden Flare", "Target must pass a Presence test or be Blinded for 1 round."],
+    ["c32", "Obey", "Target must carry out one action or movement command, spoken before the roll. If the cast fails, the reader does it under the other player's control."],
+    ["c33", "Unbreakable", "Target can't fail Morale tests for the scenario."],
+    ["c34", "Inmortalium Inventioni", "One chosen model can't be killed this scenario, though it can still be downed. On a Fumble the reader is marked for death and dies if downed."],
+    ["c41", "Sanctify", "Monsters ignore the target for the scenario unless it attacks one. On a Fumble the Laughing Man appears instead of a Calamity."],
+    ["c42", "Bow of Ska\u00f0i", "Target's ranged attacks gain 3 inches of range for the scenario."],
+    ["c43", "Danse Macabre", "Target must pass a Presence test or can't move for the scenario. It can spend its action on a Presence test to stop. A Fumble makes the reader dance instead."],
+    ["c44", "Visions of the Future", "Target can reroll one test this scenario."],
+    ["u11", "Flaming Hands of St Vilmarex", "Hurls fire at a visible enemy for 1D6 damage (Cruel)."],
+    ["u12", "Mindless Eyes", "Target must pass a Presence test or attack the closest model."],
+    ["u13", "Invisible Hands", "Moves a dropped weapon, item or treasure up to 1D12 inches."],
+    ["u14", "Ungrounded", "Target hovers for 1 round, ignoring terrain and moving at double speed."],
+    ["u21", "Breath of the Undying", "Target suffocates, taking 1D4 damage each time it activates, until it spends an action to pass a Presence test."],
+    ["u22", "One-Eyed King", "Target turns invisible and can't be targeted by any attack or spell, and monsters ignore it. Lasts until it makes a test of any kind."],
+    ["u23", "Bones, them Damn Bones", "Summons a Skeleton at a point you choose. It fights the nearest model but never the reader. If the cast fails it still appears, but attacks the reader. It leaves when the reader dies."],
+    ["u24", "Eternal Sleep", "Target must pass a Presence test or fall asleep. It wakes on taking damage or when an ally spends an action to wake it."],
+    ["u31", "Ride the Lightning", "Lightning hits a target within 12 inches for 1D6 damage, ignoring armour."],
+    ["u32", "Lost at Sea", "Target must pass a DR4 Presence test or be removed from the table and make a Death Save. If the cast fails, the reader takes the test instead. Once per scenario."],
+    ["u33", "Doom", "Everything within 12 inches, allies and the reader included, must pass a Presence test or take 1D10 damage, ignoring armour. A failed cast counts as a Fumble."],
+    ["u34", "Boil the Blood", "Target takes 1D8 damage, ignoring armour, on a failed Toughness test."],
+    ["u41", "Vocare Cattus", "Summons Cath Palug. Think twice."],
+    ["u42", "Miasma", "Target becomes Diseased and is surrounded by a 1 inch gas cloud."],
+    ["u43", "Soul Bind", "Binds the soul of a model killed this scenario to the reader. Sell it afterwards for gold equal to the model's HP."],
+    ["u44", "CHAOS", "Roll a random unclean scroll; the reader must try to cast it. Choose targets after the roll."]
+  ].map(function (r) { return { id: r[0], type: r[0][0] === "c" ? "clean" : "unclean", roll: r[0].slice(1), name: r[1], text: r[2] }; });
+  var SCROLL_BY = {};
+  SCROLLS.forEach(function (x) { SCROLL_BY[x.id] = x; });
+  var SC_OPTS = '<option value="">+ Add a scroll\u2026</option>' + ["clean", "unclean"].map(function (t) {
+    return '<optgroup label="' + (t === "clean" ? "Clean scrolls" : "Unclean scrolls") + '">' + SCROLLS.filter(function (x) { return x.type === t; }).map(function (x) {
+      return '<option value="' + x.id + '">' + x.roll + ' \u00b7 ' + escH(x.name) + '</option>'; }).join("") + '</optgroup>'; }).join("");
+
+  /* Weapons: d = damage die, s = stat tested, t = traits, note = critical / fumble / extras */
+  var WEAPONS = [
+    { id: "fists", g: "d2", n: "Bloodied Fists", d: "d2", s: "Strength", t: [], note: "On a Fumble you take 1 damage." },
+    { id: "makeshift", g: "d4", n: "Makeshift Weapon (one-handed)", d: "d4", s: "Strength", t: [], note: "A piece of bone, debris or rock." },
+    { id: "staff", g: "d4", n: "Staff", d: "d4", s: "Strength", t: [] },
+    { id: "dagger", g: "d4", n: "Dagger", d: "d4", s: "Agility", t: ["Thrown"] },
+    { id: "shortsword", g: "d6", n: "Shortsword", d: "d6", s: "Agility", t: [] },
+    { id: "warhammer", g: "d6", n: "Warhammer", d: "d6", s: "Strength", t: [], note: "Critical: causes Dazed." },
+    { id: "rapier", g: "d6", n: "Rapier", d: "d6", s: "Agility", t: [], note: "Critical: disarms the enemy." },
+    { id: "pick", g: "d6", n: "Horseman's Pick", d: "d6", s: "Strength", t: ["Cruel"] },
+    { id: "bow", g: "d6", n: "Bow", d: "d6", s: "Presence", t: ["Ranged"], note: "Comes with 5 arrows." },
+    { id: "crossbow", g: "d6", n: "Crossbow", d: "d6", s: "Presence", t: ["Ranged", "Cruel"], note: "Comes with 5 arrows." },
+    { id: "spear", g: "d6", n: "Spear", d: "d6", s: "Agility", t: ["Reach", "Thrown"] },
+    { id: "ulfberht", g: "d8", n: "Ulfberht Sword", d: "d8", s: "Strength", t: [], note: "Critical: causes Bleeding." },
+    { id: "morning-star", g: "d8", n: "Morning Star", d: "d8", s: "Strength", t: [], note: "Critical: causes Dazed." },
+    { id: "flail", g: "d8", n: "Flail", d: "d8", s: "Strength", t: [], note: "Critical: causes Bleeding." },
+    { id: "glaive", g: "d8", n: "Glaive", d: "d8", s: "Strength", t: ["Reach"] },
+    { id: "bastard-sword", g: "d10", n: "Bastard Sword", d: "d10", s: "Strength", t: [], note: "On a Critical you may choose to destroy the enemy's weapon." },
+    { id: "great-axe", g: "d10", n: "Great Axe", d: "d10", s: "Strength", t: [], note: "Critical: breaks the enemy's shield and damages them." }
+  ];
+  var WEAPON_BY_ID = {}, WEAPON_BY_NAME = {};
+  WEAPONS.forEach(function (w) { WEAPON_BY_ID[w.id] = w; WEAPON_BY_NAME[w.n.toLowerCase()] = w; });
+  var WOPTS = '<option value="">(no weapon)</option>' + ["d2", "d4", "d6", "d8", "d10"].map(function (g) {
+    return '<optgroup label="Damage ' + g + '">' + WEAPONS.filter(function (w) { return w.g === g; }).map(function (w) { return '<option value="' + w.id + '">' + escH(w.n) + '</option>'; }).join("") + '</optgroup>'; }).join("") +
+    '<option value="__other">Other (write in)</option>';
+  var TRAITS = {
+    "Thrown": "Can be thrown up to 6 inches without penalty.",
+    "Reach": "Can attack an enemy 2 inches away without provoking an attack back.",
+    "Ranged": "Can attack from a distance (12 inches unless the weapon says otherwise).",
+    "Cruel": "Always deals at least 1 damage, whatever the armour."
+  };
+  function traitText(t) { var m = /^Reload (\d+)$/.exec(t); if (m) return "Can fire " + m[1] + " times before you spend movement to reload."; return TRAITS[t] || ""; }
+  function weaponInfo(w, h) {
+    var out = ['<div>' + (w.s ? 'Test with <b>' + w.s + '</b> (' + fmt(statVal(h, w.s.toLowerCase())) + ')' : '<b>Stat not filled in</b>') + '</div>'];
+    w.t.forEach(function (t) { out.push('<div><b>' + escH(t) + '.</b> ' + escH(traitText(t)) + '</div>'); });
+    if (w.note) out.push('<div>' + escH(w.note) + '</div>');
+    if (w.chk) out.push('<div class="chk">Unconfirmed: ' + escH(w.chk) + ' Check the book.</div>');
+    return out.join("");
+  }
   var STATS = [["agility", "Agility"], ["presence", "Presence"], ["strength", "Strength"], ["toughness", "Toughness"]];
   var LS = "warband-sheet-v1", LS_TAB = "warband-sheet-tab", LS_PREV = "warband-sheet-prev", LS_BK = "warband-sheet-backup";
   var ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
   var DAY = 86400000;
 
+  /* ---- conditions, feats, flaws, items, armour (condensed from your generator code) ---- */
+  var CONDS = [["downed", "Downed"], ["dazed", "Dazed"], ["bleeding", "Bleeding"], ["blinded", "Blinded"], ["diseased", "Diseased"], ["asleep", "Asleep"], ["disarmed", "Disarmed"]];
+  var MAXP = 3, MAXI = 12;
+  var FLAWS = [
+    { id: "gammy-foot", n: "Gammy Foot", t: "-1 to movement." },
+    { id: "brittle-bones", n: "Brittle Bones", t: "Takes +1 damage when hit." },
+    { id: "putrid-smell", n: "Putrid Smell", t: "All models within 3 inches suffer -1 to Presence tests." },
+    { id: "weak-hands", n: "Weak Hands", t: "Can only wield one-handed weapons." },
+    { id: "greasy-hands", n: "Greasy Hands", t: "-1 to Agility tests.", fx: { agility: -1 } },
+    { id: "one-eyed", n: "One Eyed", t: "-1 on all ranged attacks and all spells." },
+    { id: "malnutrition", n: "Malnutrition", t: "-1 on Strength-based tests.", fx: { strength: -1 } },
+    { id: "scared-heights", n: "Scared of Heights", t: "Cannot climb or jump." },
+    { id: "angry", n: "Angry", t: "If an unfriendly model is in line of sight you must move towards it and attack if possible." },
+    { id: "vacant-mind", n: "Vacant Mind", t: "Never collects treasure or items from the battlefield." },
+    { id: "weak-bodied", n: "Weak Bodied", t: "-1 HP.", fx: { maxhp: -1 } },
+    { id: "allergic-metal", n: "Allergic to Metal", t: "Cannot wear armour.", fx: { noArmour: true } },
+    { id: "squeamish", n: "Squeamish", t: "-1 damage dealt to others." },
+    { id: "loner", n: "Loner", t: "-1 on all tests within 2 inches of a friendly model." },
+    { id: "scared-monsters", n: "Scared of Monsters", t: "-1 to attack monsters and beasts." },
+    { id: "realist", n: "Realist", t: "Cannot use Omens." },
+    { id: "poor-morale", n: "Poor Morale", t: "Makes a morale roll whenever they take damage." },
+    { id: "newbie", n: "Newbie", t: "No flaws!" }
+  ];
+  var FEATS = [
+    { id: "intimidating", n: "Intimidating Presence", t: "A single enemy you can see within 6 inches must pass a Presence test. If it fails, you may make a full move with it as if it were yours, or make it drop one of its weapons." },
+    { id: "slippery", n: "Slippery When Wet", t: "Can always leave combat." },
+    { id: "cowardly", n: "Cowardly", t: "-1 on all morale tests, +1 Agility.", fx: { agility: 1 } },
+    { id: "meathead", n: "Meathead", t: "Stronger than smart: +2 Strength, -1 Presence.", fx: { strength: 2, presence: -1 } },
+    { id: "mind-over-matter", n: "Mind Over Matter", t: "Can make a Presence test to ignore d4 damage each time they are hit." },
+    { id: "gritted-teeth", n: "Through Gritted Teeth", t: "Can make a Presence test to avoid being downed, once per encounter. They stay standing on 1 HP.", once: true },
+    { id: "revolting", n: "Revolting Appearance", t: "Enemies suffer -1 to hit this model." },
+    { id: "shadows", n: "What We Do in the Shadows", t: "Can heal by drinking blood: make a melee attack and heal the damage dealt. Gains Teeth (d4, Agility, Cruel). Cannot be healed any other way." },
+    { id: "hard-to-see", n: "Hard to See", t: "Can't be targeted by enemy ranged attacks and can't make ranged attacks. Spells work as normal." },
+    { id: "tough-nails", n: "Tough as Nails", t: "+2 HP, -1 Agility.", fx: { maxhp: 2, agility: -1 } },
+    { id: "scavenger", n: "Scavenger", t: "Roll twice on the treasure tables when searching and take both, if enough equipment slots are free. Extra items go on the ground." },
+    { id: "barkskin", n: "Barkskin", t: "+1 armour from tough skin, -1 Agility.", fx: { armour: 1, agility: -1 } },
+    { id: "clawed", n: "Clawed Nails", t: "Replace Fists with Claws (d6, Agility)." },
+    { id: "swindler", n: "Swindler", t: "At the end of the scenario, if they survive, gain one free roll on the treasure table." },
+    { id: "medic", n: "Medic", t: "Can make a Presence test to heal one downed model, restoring it to 1 HP so it returns to the fight." },
+    { id: "improvised", n: "Improvised Fighter", t: "Can make a makeshift one-handed weapon in the field." },
+    { id: "shield-bash", n: "Shield Bash", t: "A model with a shield deals an extra 2 damage in melee." },
+    { id: "lucky-foot", n: "Lucky Goblin Foot", t: "Can reroll 1 dice roll per scenario, but has -1 equipment slot.", fx: { slots: -1 }, once: true },
+    { id: "charge", n: "Charge", t: "Can move twice its movement value but must end within an inch of an enemy." },
+    { id: "feint", n: "Feint / Disarm", t: "Instead of attacking in close combat, make an Agility test to feint, preventing a successful hit. If the enemy also fails to hit, it is considered to have dropped its weapon and is disarmed." }
+  ];
+  var FLAW_BY = {}, FEAT_BY = {};
+  FLAWS.forEach(function (x) { FLAW_BY[x.id] = x; });
+  FEATS.forEach(function (x) { FEAT_BY[x.id] = x; });
+  function pickOpts(list, label) { return '<option value="">+ Add a ' + label + '…</option>' + list.map(function (x) { return '<option value="' + x.id + '">' + escH(x.n) + '</option>'; }).join(""); }
+  var FEAT_OPTS = pickOpts(FEATS, "feat"), FLAW_OPTS = pickOpts(FLAWS, "flaw");
+  var ITEMS = [
+    { id: "bandages", n: "Bandages", t: "Used to stop the Bleeding condition." },
+    { id: "lantern", n: "Lantern", t: "Needed for models to see in the dark." },
+    { id: "torch", n: "Torch", t: "Like a lantern but lasts only 3 rounds. Can be used as a one-handed makeshift weapon.", uses: 3, unit: "rounds" },
+    { id: "backpack", n: "Backpack", t: "Counts as 1 slot but provides 2 additional slots." },
+    { id: "potion", n: "Potion", t: "Heals d6. Pass a Toughness test or become Dazed." },
+    { id: "ammo", n: "Ammo", t: "5 shots.", uses: 5, unit: "shots" }
+  ];
+  var ITEM_BY_ID = {}, ITEM_BY_NAME = {};
+  ITEMS.forEach(function (x) { ITEM_BY_ID[x.id] = x; ITEM_BY_NAME[x.n.toLowerCase()] = x; });
+  var ITEM_OPTS = '<option value="">+ Add a standard item…</option>' + ITEMS.map(function (x) { return '<option value="' + x.id + '">' + escH(x.n) + '</option>'; }).join("");
+  var ARMOUR_VAL = { "": 0, light: 1, medium: 2, heavy: 3 };
+  /* what a d20 roll becomes (you roll the dice, the sheet only converts) */
+  var ROLLMOD = [[4, -3], [6, -2], [8, -1], [12, 0], [14, 1], [16, 2], [20, 3]];
+  var ROLLHP = [[4, 5], [6, 6], [8, 7], [12, 8], [14, 9], [16, 10], [20, 11]];
+  function lookup(tbl, v) { for (var i = 0; i < tbl.length; i++) if (v <= tbl[i][0]) return tbl[i][1]; return tbl[tbl.length - 1][1]; }
+  var LEGAL_HTML = 'Warband Sheet is an independent fan-made tool by 28minismax. It is not affiliated with Ockult Örtmästare Games or Stockholm Kartell, and is published under the <a href="https://morkborg.com/license" target="_blank" rel="noopener">MÖRK BORG Third Party License</a>. MÖRK BORG is copyright Ockult Örtmästare Games and Stockholm Kartell. Please support the creators by buying the official books.';
+  function blankConds() { var o = {}; CONDS.forEach(function (c) { o[c[0]] = false; }); return o; }
+
+  /* numeric feat and flaw effects are worked out from the picks, never written over your own numbers */
+  function effects(h) {
+    var e = { agility: 0, presence: 0, strength: 0, toughness: 0, maxhp: 0, armour: 0, slots: 0, noArmour: false, src: {} };
+    function add(key, name, amt) { e[key] += amt; (e.src[key] = e.src[key] || []).push(name + " " + (amt > 0 ? "+" : "−") + Math.abs(amt)); }
+    [[h.featpicks, FEAT_BY], [h.flawpicks, FLAW_BY]].forEach(function (pr) {
+      pr[0].forEach(function (id) {
+        var x = pr[1][id]; if (!x || !x.fx) return;
+        Object.keys(x.fx).forEach(function (k) {
+          if (k === "noArmour") { e.noArmour = true; (e.src.armour = e.src.armour || []).push(x.n + ": can't wear armour"); }
+          else add(k, x.n, x.fx[k]);
+        });
+      });
+    });
+    return e;
+  }
+  function statVal(h, k) { return h[k] + effects(h)[k]; }
+  function effMax(h) { return h.maxhp > 0 ? Math.max(1, h.maxhp + effects(h).maxhp) : 0; }
+  function armourTotal(h) {
+    var e = effects(h), worn = e.noArmour ? 0 : (ARMOUR_VAL[h.abody] || 0) + (/^\d+$/.test(String(h.armour).trim()) ? parseInt(h.armour, 10) : 0);
+    return Math.max(0, worn + e.armour);
+  }
+  function slotInfo(h) {
+    var e = effects(h), used = h.items.filter(function (x) { return x.trim(); }).length + (h.abody === "heavy" ? 2 : 0);
+    var pack = h.items.some(function (x) { return x.trim().toLowerCase() === "backpack"; });
+    return { used: used, cap: h.slots + (pack ? 2 : 0) + e.slots, pack: pack };
+  }
+
   function blank() {
-    var s = { warband: "", xp: 0, gold: 0, count: 5, phase: "pre", rounds: 4, party: { scroll1: "", scroll2: "", calamity: "", equipment: "", notes: "" }, omens: { banality: false, confidence: false, devastation: false, fate: false, grace: false, greed: false } };
+    var s = { warband: "", xp: 0, gold: 0, count: 5, phase: "pre", rounds: 6, party: { calamity: "", equipment: "", notes: "" }, omens: { banality: false, confidence: false, devastation: false, fate: false, grace: false, greed: false } };
     for (var i = 1; i <= MAXC; i++) {
-      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, maxhp: 0, tragedies: 0, fallen: false, activated: false,
-        right: "", right_dmg: "", left: "", left_dmg: "", feats: "", flaws: "", items: ["", "", "", "", "", "", "", ""] };
+      s["c" + i] = { name: "", agility: 0, presence: 0, strength: 0, toughness: 0, armour: "", hp: 0, maxhp: 0, tragedies: 0, fallen: false, activated: false, scrolls: ["", "", "", "", "", "", "", ""], sused: ["", "", "", "", "", "", "", ""],
+        right: "", right_dmg: "", right_o: false, left: "", left_dmg: "", left_o: false, feats: "", flaws: "", items: ["", "", "", "", "", "", "", "", "", "", "", ""], iu: ["", "", "", "", "", "", "", "", "", "", "", ""],
+        conds: blankConds(), featpicks: ["", "", ""], flawpicks: ["", "", ""], fused: ["", "", ""], abody: "", helm: false, shield: false, shieldx: false, slots: 8 };
     }
     return s;
   }
@@ -396,6 +653,12 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   /* older saves kept XP and gold as text */
   function migrate(o) {
     if (!o || typeof o !== "object") return o;
+    /* scrolls now belong to heroes: keep anything typed in the old party scroll boxes by moving it to the notes */
+    var pt = o.party;
+    if (pt && typeof pt === "object") {
+      var oldSc = [pt.scroll1, pt.scroll2].filter(function (x) { return typeof x === "string" && x.trim(); });
+      if (oldSc.length) { pt.notes = (typeof pt.notes === "string" && pt.notes ? pt.notes + "\n\n" : "") + "Old scroll notes: " + oldSc.join(" / "); pt.scroll1 = ""; pt.scroll2 = ""; }
+    }
     ["xp", "gold"].forEach(function (k) {
       if (typeof o[k] === "string") { var n = parseInt(o[k].replace(/[^\d-]/g, ""), 10); o[k] = isNaN(n) ? 0 : n; }
     });
@@ -404,14 +667,29 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   function ni(v, lo, hi, d) { v = parseInt(v, 10); if (isNaN(v)) v = d; return Math.max(lo, Math.min(hi, v)); }
   function sanitize(s) {
     s.xp = ni(s.xp, 0, 9999999, 0); s.gold = ni(s.gold, 0, 9999999, 0); s.count = ni(s.count, 5, MAXC, 5);
-    s.rounds = ni(s.rounds, 4, 8, 4);
+    s.rounds = ni(s.rounds, 6, 8, 6);
     if (!(s.phase === "pre" || s.phase === "post" || (/^\d+$/.test(s.phase) && +s.phase >= 1 && +s.phase <= s.rounds))) s.phase = "pre";
     for (var i = 1; i <= MAXC; i++) {
       var h = s["c" + i];
       STATS.forEach(function (st) { h[st[0]] = ni(h[st[0]], -9, 9, 0); });
       h.hp = ni(h.hp, 0, 999, 0); h.maxhp = ni(h.maxhp, 0, 999, 0); h.tragedies = ni(h.tragedies, 0, 99, 0);
-      if (h.maxhp > 0 && h.hp > h.maxhp) h.hp = h.maxhp;
       if (h.fallen) h.activated = false;
+      var sc = [], su = [];
+      for (var q = 0; q < MAXS; q++) if (SCROLL_BY[h.scrolls[q]]) { sc.push(h.scrolls[q]); su.push(h.sused[q] === "1" ? "1" : ""); }
+      while (sc.length < MAXS) { sc.push(""); su.push(""); }
+      h.scrolls = sc; h.sused = su;
+      function compact(ids, by, used) {
+        var a = [], u = [];
+        for (var z = 0; z < MAXP; z++) if (by[ids[z]]) { a.push(ids[z]); u.push(used && used[z] === "1" ? "1" : ""); }
+        while (a.length < MAXP) { a.push(""); u.push(""); }
+        return [a, u];
+      }
+      var fp = compact(h.featpicks, FEAT_BY, h.fused); h.featpicks = fp[0]; h.fused = fp[1];
+      h.flawpicks = compact(h.flawpicks, FLAW_BY)[0];
+      if (!ARMOUR_VAL.hasOwnProperty(h.abody)) h.abody = "";
+      h.slots = ni(h.slots, 1, 20, 8);
+      h.iu = h.iu.map(function (x) { return /^\d{1,2}$/.test(x) ? x : ""; });
+      var emx = effMax(h); if (emx > 0 && h.hp > emx) h.hp = emx;
     }
     return s;
   }
@@ -449,16 +727,24 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       return '<div class="stat"><span class="nm">' + s[1] + '</span><div class="ctl">' +
         '<button type="button" class="step" data-step="' + c + '.' + s[0] + '" data-d="-1" aria-label="Decrease ' + s[1] + '">−</button>' +
         '<span class="val" data-show="' + c + '.' + s[0] + '" aria-live="polite"></span>' +
-        '<button type="button" class="step" data-step="' + c + '.' + s[0] + '" data-d="1" aria-label="Increase ' + s[1] + '">+</button></div></div>';
+        '<button type="button" class="step" data-step="' + c + '.' + s[0] + '" data-d="1" aria-label="Increase ' + s[1] + '">+</button></div>' +
+        '<span class="fxn" data-fxn="' + c + '.' + s[0] + '"></span></div>';
     }).join("");
     var items = "";
-    for (var i = 0; i < 8; i++) {
-      items += '<div class="item"><span>' + (i + 1) + '.</span><input id="' + c + '-item' + i + '" data-k="' + c + '.items.' + i + '" type="text" autocomplete="off" aria-label="Item ' + (i + 1) + '"></div>';
+    for (var i = 0; i < MAXI; i++) {
+      items += '<div class="item" id="' + c + '-irow' + i + '"><span>' + (i + 1) + '.</span><input id="' + c + '-item' + i + '" data-k="' + c + '.items.' + i + '" type="text" autocomplete="off" aria-label="Item ' + (i + 1) + '">' +
+        '<div class="iu" id="' + c + '-iu' + i + '" hidden><button type="button" class="step sm" data-iu="' + c + ':' + i + ':-1" aria-label="Use one">−</button><b class="iuv"></b><em class="iun"></em><button type="button" class="step sm" data-iu="' + c + ':' + i + ':1" aria-label="Add one">+</button></div></div>';
     }
+    var conds = CONDS.map(function (x) { return '<button type="button" class="cond" data-cond="' + c + ':' + x[0] + '" aria-pressed="false">' + x[1] + '</button>'; }).join("");
+    var rolls = [["agility", "Agi"], ["presence", "Pre"], ["strength", "Str"], ["toughness", "Tou"], ["hp", "HP"]].map(function (r) {
+      return '<label class="rl"><span>' + r[1] + '</span><input class="box" type="text" inputmode="numeric" maxlength="2" autocomplete="off" data-roll="' + c + ':' + r[0] + '" aria-label="d20 roll for ' + r[1] + '"><b class="rlp" data-rollp="' + c + ':' + r[0] + '"></b></label>';
+    }).join("");
     function hand(key, label) {
-      return '<div class="hand"><label class="field-label" for="' + c + '-' + key + '"><span class="cap">' + label[0] + '</span>' + label.slice(1) + '</label>' +
-        '<input class="box" id="' + c + '-' + key + '" data-k="' + c + '.' + key + '" type="text" autocomplete="off" placeholder="Weapon">' +
-        '<input class="box" id="' + c + '-' + key + '_dmg" data-k="' + c + '.' + key + '_dmg" type="text" autocomplete="off" aria-label="' + label + ' damage" placeholder="d6"></div>';
+      return '<div class="hand"><label class="field-label" for="' + c + '-' + key + '-sel"><span class="cap">' + label[0] + '</span>' + label.slice(1) + '</label>' +
+        '<select class="box wsel" id="' + c + '-' + key + '-sel" data-weapon="' + c + '.' + key + '" aria-label="' + label + ' hand weapon">' + WOPTS + '</select>' +
+        '<input class="box" id="' + c + '-' + key + '_dmg" data-k="' + c + '.' + key + '_dmg" type="text" autocomplete="off" aria-label="' + label + ' damage" placeholder="d6">' +
+        '<input class="box wother" id="' + c + '-' + key + '" data-k="' + c + '.' + key + '" type="text" autocomplete="off" aria-label="' + label + ' weapon name" placeholder="Weapon name" hidden>' +
+        '<div class="winfo" id="' + c + '-' + key + '-info" hidden></div></div>';
     }
     return '<section class="panel" id="p-' + c + '" role="tabpanel" aria-labelledby="t-' + c + '" hidden>' +
       '<div class="toprow"><button type="button" class="backlink" data-tab="band">‹ Warband</button><div class="topbtns">' +
@@ -472,7 +758,7 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '</div>' +
       '<div class="vitals">' +
         '<div class="vital"><span class="field-label">Armour</span><div class="art">' + SHIELD +
-          '<input class="plate shield" id="' + c + '-armour" data-k="' + c + '.armour" type="text" autocomplete="off" aria-label="Armour" placeholder="–"></div></div>' +
+          '<div class="plate shield" data-armtot="' + c + '" role="img" aria-label="Total armour"></div></div></div>' +
         '<div class="vital"><span class="field-label">Health</span><div class="art">' + HEART +
           '<div class="plate" data-show="' + c + '.hp" aria-live="polite"></div></div>' +
           '<div class="hpctl"><button type="button" class="step" data-step="' + c + '.hp" data-d="-1" aria-label="Lose 1 health">−</button>' +
@@ -482,19 +768,32 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
         '<button type="button" class="step" data-step="' + c + '.maxhp" data-d="-1" aria-label="Lower maximum health">−</button>' +
         '<span class="tnum" data-show="' + c + '.maxhp" aria-live="polite"></span>' +
         '<button type="button" class="step" data-step="' + c + '.maxhp" data-d="1" aria-label="Raise maximum health">+</button></div>' +
+        '<span class="fxn" data-fxn="' + c + '.maxhp"></span>' +
         '<button type="button" class="restbtn" data-rest="' + c + '" hidden>Rest — heal to full</button></div>' +
+      '<div><span class="field-label"><span class="cap">C</span>onditions</span><div class="conds">' + conds + '</div></div>' +
+      '<details class="roller"><summary>Set stats from d20 rolls</summary><p class="reset-sub">Roll a d20 for each yourself and type what you got. 1–4 is −3 up to 17–20 is +3, and health runs from 5 to 11. Leave any box empty to keep that stat.</p>' +
+        '<div class="rlgrid">' + rolls + '</div><button type="button" class="actbtn" data-roll-apply="' + c + '">Apply my rolls</button></details>' +
       '<div class="stats">' + stats + '</div>' +
       '<div class="tragedy"><span class="field-label tl"><span class="cap">T</span>ragedies</span><div class="tctl">' +
         '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="-1" aria-label="Remove a tragedy">−</button>' +
         '<span class="tnum" data-show="' + c + '.tragedies" aria-live="polite"></span>' +
         '<button type="button" class="step" data-step="' + c + '.tragedies" data-d="1" aria-label="Add a tragedy">+</button></div></div>' +
+      '<div class="armsec"><div class="armhead"><span class="field-label"><span class="cap">A</span>rmour</span><span class="armtot">Total <b data-armtot="' + c + '"></b></span></div>' +
+        '<select class="box wsel" id="' + c + '-abody" data-armour-body="' + c + '" aria-label="Body armour"><option value="">No body armour</option><option value="light">Light (1)</option><option value="medium">Medium (2)</option><option value="heavy">Heavy (3), two slots</option></select>' +
+        '<div class="armrow"><button type="button" class="cond tog" data-armour-tog="' + c + ':helm" aria-pressed="false">Helm</button>' +
+        '<button type="button" class="cond tog" data-armour-tog="' + c + ':shield" aria-pressed="false">Shield</button>' +
+        '<button type="button" class="cond tog" id="' + c + '-shx" data-armour-tog="' + c + ':shieldx" aria-pressed="false" hidden>Shield destroyed</button></div>' +
+        '<div class="winfo" id="' + c + '-arminfo" hidden></div>' +
+        '<div class="armother"><label for="' + c + '-armour">Other armour</label><input class="box" id="' + c + '-armour" data-k="' + c + '.armour" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></div></div>' +
       '<div class="hands">' + hand("right", "Right") + hand("left", "Left") + '</div>' +
+      '<div><span class="field-label"><span class="cap">S</span>crolls</span><div class="sclist" id="sc-' + c + '"></div></div>' +
       '<div class="two">' +
-        '<div><label class="field-label" for="' + c + '-feats"><span class="cap">F</span>eats</label><textarea class="box" id="' + c + '-feats" data-k="' + c + '.feats" placeholder="Feats"></textarea></div>' +
-        '<div><label class="field-label" for="' + c + '-flaws"><span class="cap">F</span>laws <small>&amp; Injury</small></label><textarea class="box" id="' + c + '-flaws" data-k="' + c + '.flaws" placeholder="Flaws and injuries"></textarea></div>' +
+        '<div><span class="field-label"><span class="cap">F</span>eats</span><div class="sclist" id="ft-' + c + '"></div><textarea class="box" style="margin-top:10px" id="' + c + '-feats" data-k="' + c + '.feats" aria-label="Other feats and notes" placeholder="Other feats and notes"></textarea></div>' +
+        '<div><span class="field-label"><span class="cap">F</span>laws <small>&amp; Injury</small></span><div class="sclist" id="fl-' + c + '"></div><textarea class="box" style="margin-top:10px" id="' + c + '-flaws" data-k="' + c + '.flaws" aria-label="Injuries and other notes" placeholder="Injuries and other notes"></textarea></div>' +
       '</div>' +
-      '<div><span class="field-label"><span class="cap">I</span>tems</span><div class="items">' + items + '</div></div>' +
-      '<button type="button" class="resetbtn" data-remove="' + n + '"' + (n > 6 ? '' : ' hidden') + '>Remove this hero</button>' +
+      '<div class="eqsec"><span class="field-label"><span class="cap">E</span>quipment</span><div class="slotbar" id="' + c + '-slots"></div><div class="items">' + items + '</div>' +
+        '<select class="box scadd" data-item-add="' + c + '" aria-label="Add a standard item">' + ITEM_OPTS + '</select><div class="winfo" id="' + c + '-iinfo" hidden></div></div>' +
+      '<button type="button" class="resetbtn" data-remove="' + n + '"' + (n > 5 ? '' : ' hidden') + '>Remove this hero</button>' +
     '</section>';
   }
 
@@ -513,20 +812,21 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       return '<div><div class="sect-head"><span class="blot"><span class="cap">' + label[0] + '</span>' + label.slice(1) + '</span></div>' +
         '<textarea class="box" style="margin-top:10px;min-height:' + rows + 'px" id="party-' + key + '" data-k="party.' + key + '" aria-label="' + label + '"></textarea></div>';
     }
-    return '<div class="scrolls">' + blk("scroll1", "Scroll", 84) + blk("scroll2", "Scroll", 84) + '</div>' +
-      blk("calamity", "Calamity", 72) + omensBlock() + blk("equipment", "Party Equipment", 120);
+    return blk("calamity", "Calamity", 72) + omensBlock() + blk("equipment", "Party Equipment", 120);
   }
 
   var html = '<section class="panel" id="p-band" role="tabpanel" aria-labelledby="t-band" hidden>' + partyBlocks() +
     '<div class="sect-head"><span class="blot"><span class="cap">H</span>eroes</span></div>' +
     '<div class="roster" id="roster"><div class="notescell" id="notescell"><div class="notebox"><textarea class="box" id="party-notes" data-k="party.notes" aria-label="Notes" placeholder="Notes"></textarea></div><label class="nlabel" for="party-notes">Notes</label></div></div>' +
     '<button type="button" class="actbtn" id="recruit">Recruit another hero</button>' +
+    '<button type="button" class="actbtn" id="print-open">Print roster cards</button>' +
     '<div class="backup"><div class="sect-head"><span class="blot"><span class="cap">B</span>ackup</span></div>' +
       '<p class="reset-sub" id="backup-note"></p>' +
       '<div class="bgrid"><button type="button" class="actbtn" id="bk-save">Save backup file</button><button type="button" class="actbtn" id="bk-copy">Copy backup</button>' +
       '<button type="button" class="actbtn" id="bk-load">Restore from file</button><button type="button" class="actbtn" id="bk-paste">Paste backup</button></div></div>' +
     '<button type="button" class="actbtn" id="restore-open" hidden></button>' +
-    '<button type="button" class="resetbtn" id="reset-open">Start a new warband</button></section>';
+    '<button type="button" class="resetbtn" id="reset-open">Start a new warband</button>' +
+    '<p class="legal">' + LEGAL_HTML + '</p></section>';
   for (var n = 1; n <= MAXC; n++) html += charPanel(n);
   panels.innerHTML = html;
 
@@ -556,14 +856,14 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       if (el.tagName === "TEXTAREA") grow(el);
     });
     document.querySelectorAll("[data-show]").forEach(function (el) {
-      var k = el.getAttribute("data-show"), v = getPath(k);
-      if (/\.hp$/.test(k)) {
-        var mx = getPath(k.replace(/hp$/, "maxhp"));
-        el.textContent = mx > 0 ? v + "/" + mx : String(v);
-        el.classList.toggle("sm", mx > 0); el.classList.toggle("zero", mx > 0 && v === 0);
-      } else if (/\.maxhp$/.test(k)) el.textContent = v > 0 ? String(v) : "–";
-      else if (/\.tragedies$/.test(k)) el.textContent = String(v);
-      else el.textContent = fmt(v);
+      var pp = el.getAttribute("data-show").split("."), h = state[pp[0]], f = pp[1];
+      if (f === "hp") {
+        var mx = effMax(h);
+        el.textContent = mx > 0 ? h.hp + "/" + mx : String(h.hp);
+        el.classList.toggle("sm", mx > 0); el.classList.toggle("zero", mx > 0 && h.hp === 0);
+      } else if (f === "maxhp") { var em = effMax(h); el.textContent = em > 0 ? String(em) : "–"; }
+      else if (f === "tragedies") el.textContent = String(h.tragedies);
+      else el.textContent = fmt(statVal(h, f));
     });
     document.getElementById("v-xp").textContent = state.xp;
     document.getElementById("v-gold").textContent = state.gold;
@@ -578,9 +878,12 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     }
     document.querySelectorAll("[data-activated]").forEach(function (b) { b.setAttribute("aria-pressed", state[b.getAttribute("data-activated")].activated ? "true" : "false"); });
     document.querySelectorAll("[data-fallen]").forEach(function (b) { b.setAttribute("aria-pressed", state[b.getAttribute("data-fallen")].fallen ? "true" : "false"); });
-    document.querySelectorAll("[data-rest]").forEach(function (b) { var h = state[b.getAttribute("data-rest")]; b.hidden = !(h.maxhp > 0 && h.hp < h.maxhp); });
+    document.querySelectorAll("[data-rest]").forEach(function (b) { var h = state[b.getAttribute("data-rest")]; b.hidden = !(effMax(h) > 0 && h.hp < effMax(h)); });
     paintOmens();
     paintPhases();
+    paintScrolls();
+    paintWeapons();
+    paintHero();
     paintRoster();
     paintBackup();
     if (adjKey) paintAdj();
@@ -596,19 +899,121 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     document.getElementById("omcount").textContent = used + " of " + OMENS.length + " used";
     document.getElementById("omen-clear").hidden = used === 0;
   }
+  var scSig = {};
+  function paintScrolls() {
+    for (var n = 1; n <= MAXC; n++) {
+      var c = "c" + n, h = state[c], box = document.getElementById("sc-" + c), sig = h.scrolls.join(",") + "|" + h.sused.join(",");
+      if (scSig[c] === sig) continue;
+      scSig[c] = sig;
+      var out = "", have = 0;
+      h.scrolls.forEach(function (id, i) {
+        var sc = SCROLL_BY[id]; if (!sc) return;
+        have++;
+        var used = h.sused[i] === "1";
+        out += '<div class="scard ' + sc.type + (used ? ' used' : '') + '"><div class="sctop"><span class="scn">' + escH(sc.name) + '</span>' +
+          '<span class="sctag">' + (sc.type === "clean" ? "Clean" : "Unclean") + ' \u00b7 ' + sc.roll + '</span>' +
+          '<button type="button" class="omdel" data-scroll-del="' + c + ':' + i + '" aria-label="Remove ' + escH(sc.name) + '">\u00d7</button></div>' +
+          '<p class="scd">' + escH(sc.text) + '</p>' +
+          '<button type="button" class="scuse" data-scroll-use="' + c + ':' + i + '" aria-pressed="' + used + '">Used this scenario</button></div>';
+      });
+      if (have) out += '<p class="reset-sub">Reading a scroll is a DR12 Presence test. Fail or Critical: mark a Tragedy. Fumble: roll on the Calamity table, adding your Tragedies (max 20).</p>';
+      if (have < MAXS) out += '<select class="box scadd" data-scroll-add="' + c + '" aria-label="Add a scroll to this hero">' + SC_OPTS + '</select>';
+      box.innerHTML = out;
+    }
+  }
+  function paintWeapons() {
+    for (var n = 1; n <= MAXC; n++) {
+      var c = "c" + n, h = state[c];
+      ["right", "left"].forEach(function (key) {
+        var sel = document.getElementById(c + "-" + key + "-sel"), oth = document.getElementById(c + "-" + key), info = document.getElementById(c + "-" + key + "-info");
+        var name = h[key] || "", w = WEAPON_BY_NAME[name.toLowerCase()];
+        var mode = w ? w.id : (h[key + "_o"] || name) ? "__other" : "";
+        if (document.activeElement !== sel && sel.value !== mode) sel.value = mode;
+        oth.hidden = mode !== "__other";
+        info.hidden = !w;
+        if (w) info.innerHTML = weaponInfo(w, h);
+      });
+    }
+  }
+  function fxText(fx) {
+    var nm = { agility: "Agility", presence: "Presence", strength: "Strength", toughness: "Toughness", maxhp: "Max HP", armour: "Armour", slots: "Slots" }, out = [];
+    Object.keys(fx).forEach(function (k) { out.push(k === "noArmour" ? "Can't wear armour" : nm[k] + " " + (fx[k] > 0 ? "+" : "−") + Math.abs(fx[k])); });
+    return out.join(" · ");
+  }
+  function pickCards(c, h, kind) {
+    var ids = kind === "feat" ? h.featpicks : h.flawpicks, by = kind === "feat" ? FEAT_BY : FLAW_BY, out = "", have = 0;
+    ids.forEach(function (id, i) {
+      var x = by[id]; if (!x) return;
+      have++;
+      var used = kind === "feat" && h.fused[i] === "1";
+      out += '<div class="scard ' + kind + (used ? ' used' : '') + '"><div class="sctop"><span class="scn">' + escH(x.n) + '</span><span class="sctag">' + (kind === "feat" ? "Feat" : "Flaw") + '</span>' +
+        '<button type="button" class="omdel" data-pick-del="' + c + ':' + kind + ':' + i + '" aria-label="Remove ' + escH(x.n) + '">×</button></div>' +
+        '<p class="scd">' + escH(x.t) + '</p>' +
+        (x.fx ? '<p class="fxb">Applied automatically: ' + escH(fxText(x.fx)) + '</p>' : '') +
+        (x.once ? '<button type="button" class="scuse" data-pick-use="' + c + ':' + i + '" aria-pressed="' + used + '">Used this scenario</button>' : '') + '</div>';
+    });
+    if (have < MAXP) out += '<select class="box scadd" data-pick-add="' + c + ':' + kind + '" aria-label="Add a ' + kind + '">' + (kind === "feat" ? FEAT_OPTS : FLAW_OPTS) + '</select>';
+    return out;
+  }
+  var pickSig = {};
+  function paintHero() {
+    document.querySelectorAll("[data-cond]").forEach(function (b) { var q = b.getAttribute("data-cond").split(":"); b.setAttribute("aria-pressed", state[q[0]].conds[q[1]] ? "true" : "false"); });
+    document.querySelectorAll("[data-armour-tog]").forEach(function (b) { var q = b.getAttribute("data-armour-tog").split(":"); b.setAttribute("aria-pressed", state[q[0]][q[1]] ? "true" : "false"); });
+    for (var n = 1; n <= MAXC; n++) {
+      var c = "c" + n, h = state[c], e = effects(h);
+      STATS.forEach(function (st) { var el = document.querySelector('[data-fxn="' + c + '.' + st[0] + '"]'); el.textContent = e.src[st[0]] ? e.src[st[0]].join(", ") : ""; });
+      document.querySelector('[data-fxn="' + c + '.maxhp"]').textContent = e.src.maxhp ? e.src.maxhp.join(", ") : "";
+      /* armour */
+      var tot = armourTotal(h);
+      document.querySelectorAll('[data-armtot="' + c + '"]').forEach(function (el) { el.textContent = String(tot); });
+      var sel = document.getElementById(c + "-abody"); if (document.activeElement !== sel) sel.value = h.abody;
+      document.getElementById(c + "-shx").hidden = !h.shield;
+      var ai = [];
+      if (e.noArmour) ai.push("<b>Allergic to Metal:</b> can't wear armour, so worn armour isn't counted.");
+      if (h.abody === "heavy") ai.push("Heavy armour takes up two equipment slots.");
+      if (h.helm) ai.push("<b>Helm:</b> cannot be dazed by an attack.");
+      if (h.shield) ai.push(h.shieldx ? "<b>Shield:</b> destroyed." : "<b>Shield:</b> can be destroyed to ignore one attack after all rolls.");
+      if (e.src.armour && !e.noArmour) ai.push("From feats: " + escH(e.src.armour.join(", ")));
+      var aEl = document.getElementById(c + "-arminfo"); aEl.hidden = !ai.length; aEl.innerHTML = ai.map(function (x) { return "<div>" + x + "</div>"; }).join("");
+      /* feats and flaws */
+      var sig = h.featpicks.join(",") + "|" + h.fused.join(",") + "|" + h.flawpicks.join(",");
+      if (pickSig[c] !== sig) { pickSig[c] = sig; document.getElementById("ft-" + c).innerHTML = pickCards(c, h, "feat"); document.getElementById("fl-" + c).innerHTML = pickCards(c, h, "flaw"); }
+      /* equipment lines, uses, slots */
+      var si = slotInfo(h), last = -1;
+      h.items.forEach(function (x, i) { if (x.trim()) last = i; });
+      var vis = Math.min(MAXI, Math.max(si.cap, last + 1, 1)), known = {};
+      for (var i = 0; i < MAXI; i++) {
+        document.getElementById(c + "-irow" + i).hidden = i >= vis;
+        var kn = ITEM_BY_NAME[h.items[i].trim().toLowerCase()], iuEl = document.getElementById(c + "-iu" + i);
+        if (kn) known[kn.id] = kn;
+        if (kn && kn.uses != null) { iuEl.hidden = false; iuEl.querySelector(".iuv").textContent = h.iu[i] === "" ? kn.uses : h.iu[i]; iuEl.querySelector(".iun").textContent = kn.unit; }
+        else iuEl.hidden = true;
+      }
+      var det = [];
+      if (si.pack) det.push("Backpack +2");
+      if (e.src.slots) det.push(e.src.slots.join(", "));
+      if (h.abody === "heavy") det.push("Heavy armour uses 2");
+      var over = si.used > si.cap;
+      document.getElementById(c + "-slots").innerHTML = '<div class="slots' + (over ? ' over' : '') + '">Slots <b>' + si.used + '</b> / <b>' + si.cap + '</b>' + (over ? ' · over capacity' : '') + '</div>' +
+        '<div class="sldet">Base <button type="button" class="step sm" data-step="' + c + '.slots" data-d="-1" aria-label="Fewer base slots">−</button><b>' + h.slots + '</b><button type="button" class="step sm" data-step="' + c + '.slots" data-d="1" aria-label="More base slots">+</button>' +
+        (det.length ? ' · ' + escH(det.join(" · ")) : '') + '</div>';
+      var ii = document.getElementById(c + "-iinfo"), ik = Object.keys(known);
+      ii.hidden = !ik.length; ii.innerHTML = ik.map(function (k) { return "<div><b>" + escH(known[k].n) + ".</b> " + escH(known[k].t) + "</div>"; }).join("");
+    }
+  }
   var builtRounds = -1;
   function paintPhases() {
     if (builtRounds !== state.rounds) {
       var ph = '<button type="button" class="phase word" data-phase="pre" aria-label="Before the scenario">Pre</button>';
       for (var r = 1; r <= state.rounds; r++) ph += '<button type="button" class="phase" data-phase="' + r + '" aria-label="Round ' + r + '">' + r + '</button>';
       ph += '<button type="button" class="phase word" data-phase="post" aria-label="After the scenario">Post</button>';
-      if (state.rounds < 8) ph += '<button type="button" class="phase add" data-addround aria-label="Add an extra round">+</button>';
       document.getElementById("phases").innerHTML = ph; builtRounds = state.rounds;
     }
     var p = state.phase, inRound = p !== "pre" && p !== "post";
     document.querySelectorAll("[data-phase]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-phase") === p ? "true" : "false"); });
     document.getElementById("chip-xp").hidden = inRound; document.getElementById("chip-gold").hidden = inRound;
     var note = document.getElementById("roundnote"); note.hidden = !inRound;
+    document.getElementById("addround").hidden = !(inRound && p === String(state.rounds) && state.rounds < 8);
     if (inRound) {
       var live = 0, done = 0;
       for (var n = 1; n <= state.count; n++) { var hh = state["c" + n]; if (!hh.fallen) { live++; if (hh.activated) done++; } }
@@ -631,9 +1036,13 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
       b.appendChild(pic);
       b.appendChild(mk("div", "tn", nm));
       if (h.fallen) b.appendChild(mk("div", "tm", "† Fallen"));
-      else b.appendChild(mk("div", "tm", "HP " + h.hp + (h.maxhp > 0 ? "/" + h.maxhp : "") + (h.armour ? "  ·  Armour " + h.armour : "")));
-      b.appendChild(mk("div", "ts", "Agi " + fmt(h.agility) + "  Pre " + fmt(h.presence) + "  Str " + fmt(h.strength) + "  Tou " + fmt(h.toughness)));
+      else b.appendChild(mk("div", "tm", "HP " + h.hp + (effMax(h) > 0 ? "/" + effMax(h) : "") + (armourTotal(h) ? "  \u00b7  Armour " + armourTotal(h) : "")));
+      b.appendChild(mk("div", "ts", "Agi " + fmt(statVal(h, "agility")) + "  Pre " + fmt(statVal(h, "presence")) + "  Str " + fmt(statVal(h, "strength")) + "  Tou " + fmt(statVal(h, "toughness"))));
       if (h.tragedies > 0) b.appendChild(mk("div", "ts", "Tragedies " + h.tragedies));
+      var nsc = h.scrolls.filter(Boolean).length;
+      if (nsc) b.appendChild(mk("div", "ts", "Scrolls " + nsc));
+      var cn = CONDS.filter(function (x) { return h.conds[x[0]]; }).map(function (x) { return x[1]; });
+      if (cn.length) b.appendChild(mk("div", "ts cnd", "\u26a0 " + cn.join(", ")));
       r.insertBefore(b, nc);
     });
     document.getElementById("recruit").hidden = state.count >= MAXC;
@@ -966,24 +1375,88 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 
   /* ---------- scenario phase ---------- */
   function actSnap() { var a = []; for (var n = 1; n <= MAXC; n++) if (state["c" + n].activated) a.push(n); return a; }
+  function scenSnap() {
+    var o = {};
+    for (var n = 1; n <= MAXC; n++) {
+      var h = state["c" + n];
+      if (h.sused.some(Boolean) || h.fused.some(Boolean) || CONDS.some(function (x) { return h.conds[x[0]]; }))
+        o["c" + n] = { sused: h.sused.slice(), fused: h.fused.slice(), conds: JSON.parse(JSON.stringify(h.conds)) };
+    }
+    return o;
+  }
   function setPhase(p, rounds) {
     if (p === state.phase) return;
-    var prev = { phase: state.phase, rounds: state.rounds, act: actSnap() };
+    var prev = { phase: state.phase, rounds: state.rounds, act: actSnap(), used: p === "pre" ? scenSnap() : {} };
     state.phase = p;
-    if (p === "pre") state.rounds = 4;
+    if (p === "pre") state.rounds = 6;
     if (rounds) state.rounds = rounds;
-    for (var n = 1; n <= MAXC; n++) state["c" + n].activated = false;
+    for (var n = 1; n <= MAXC; n++) {
+      var hh = state["c" + n]; hh.activated = false;
+      if (p === "pre") { hh.sused = ["", "", "", "", "", "", "", ""]; hh.fused = ["", "", ""]; hh.conds = blankConds(); }
+    }
     paint(); touch();
-    if (prev.act.length) toast("Activations cleared. Tap to undo.", false, function () {
+    var hadUsed = Object.keys(prev.used).length > 0;
+    if (prev.act.length || hadUsed) toast((hadUsed ? "New scenario: activations, conditions, used scrolls and used feats cleared." : "Activations cleared.") + " Tap to undo.", false, function () {
       state.phase = prev.phase; state.rounds = prev.rounds;
       prev.act.forEach(function (n) { state["c" + n].activated = true; });
+      Object.keys(prev.used).forEach(function (c) { state[c].sused = prev.used[c].sused; state[c].fused = prev.used[c].fused; state[c].conds = prev.used[c].conds; });
       paint(); touch();
     });
   }
+  function fixHp(h, before) {
+    var after = effMax(h);
+    if (before > 0 && h.hp === before) h.hp = after;
+    if (after > 0 && h.hp > after) h.hp = after;
+  }
 
-  /* ---------- remove a hero (only heroes past the sixth) ---------- */
+  /* ---------- d20 converter, print view ---------- */
+  function applyRolls(c) {
+    var h = state[c], did = 0;
+    document.querySelectorAll('[data-roll^="' + c + ':"]').forEach(function (inp) {
+      var f = inp.getAttribute("data-roll").split(":")[1], v = parseInt(inp.value, 10);
+      if (!(v >= 1 && v <= 20)) return;
+      if (f === "hp") { h.maxhp = lookup(ROLLHP, v); h.hp = effMax(h); } else h[f] = lookup(ROLLMOD, v);
+      did++; inp.value = "";
+    });
+    document.querySelectorAll('[data-rollp^="' + c + ':"]').forEach(function (el) { el.textContent = ""; });
+    if (!did) { toast("Type at least one d20 roll first.", true); return; }
+    paint(); touch(); toast("Stats set from your rolls.");
+  }
+  function weaponLine(h, key, label) {
+    var nm = (h[key] || "").trim(); if (!nm) return "";
+    var w = WEAPON_BY_NAME[nm.toLowerCase()], bits = [escH(nm)];
+    if (h[key + "_dmg"]) bits.push(escH(h[key + "_dmg"]));
+    if (w) { if (w.s) bits.push(w.s + " " + fmt(statVal(h, w.s.toLowerCase()))); w.t.forEach(function (t) { bits.push(t); }); if (w.note) bits.push(escH(w.note)); }
+    return '<div><b>' + label + ':</b> ' + bits.join(" \u00b7 ") + '</div>';
+  }
+  function buildPrint() {
+    var left = OMENS.filter(function (o) { return !state.omens[o[0]]; }).map(function (o) { return o[1]; });
+    var out = '<h1>' + escH(state.warband || "Warband") + '</h1><p>XP ' + state.xp + ' \u00b7 Gold ' + state.gold + ' \u00b7 Omens left: ' + (left.length ? left.join(", ") : "none") + '</p>';
+    heroOrder().forEach(function (c) {
+      var h = state[c], n = +c.slice(1), em = effMax(h), nm = (h.name || "").trim() || "Hero " + n;
+      out += '<div class="pcard"><div class="phead">' + (photos[c] ? '<img src="' + photos[c] + '" alt="">' : '') + '<div><h2>' + escH(nm) + (h.fallen ? ' (fallen)' : '') + '</h2>' +
+        '<div class="pst">AGI ' + fmt(statVal(h, "agility")) + ' \u00b7 PRE ' + fmt(statVal(h, "presence")) + ' \u00b7 STR ' + fmt(statVal(h, "strength")) + ' \u00b7 TOU ' + fmt(statVal(h, "toughness")) + '</div>' +
+        '<div>HP ' + h.hp + (em ? '/' + em : '') + ' \u00b7 Armour ' + armourTotal(h) + (h.helm ? ' \u00b7 Helm' : '') + (h.shield ? ' \u00b7 Shield' + (h.shieldx ? ' (destroyed)' : '') : '') + ' \u00b7 Tragedies ' + h.tragedies + '</div></div></div>';
+      out += weaponLine(h, "right", "Right") + weaponLine(h, "left", "Left");
+      h.scrolls.forEach(function (id) { var sc = SCROLL_BY[id]; if (sc) out += '<div><b>Scroll:</b> ' + escH(sc.name) + ' \u2014 ' + escH(sc.text) + '</div>'; });
+      h.featpicks.forEach(function (id) { var x = FEAT_BY[id]; if (x) out += '<div><b>Feat:</b> ' + escH(x.n) + ' \u2014 ' + escH(x.t) + '</div>'; });
+      h.flawpicks.forEach(function (id) { var x = FLAW_BY[id]; if (x) out += '<div><b>Flaw:</b> ' + escH(x.n) + ' \u2014 ' + escH(x.t) + '</div>'; });
+      if (h.feats.trim()) out += '<div><b>Notes:</b> ' + escH(h.feats) + '</div>';
+      if (h.flaws.trim()) out += '<div><b>Injuries and notes:</b> ' + escH(h.flaws) + '</div>';
+      var its = h.items.map(function (x, i) { x = x.trim(); if (!x) return ""; var kn = ITEM_BY_NAME[x.toLowerCase()]; return escH(x) + (kn && kn.uses != null ? ' (' + (h.iu[i] === "" ? kn.uses : h.iu[i]) + ' ' + kn.unit + ')' : ''); }).filter(Boolean);
+      var si = slotInfo(h);
+      out += '<div><b>Equipment (' + si.used + '/' + si.cap + ' slots):</b> ' + (its.length ? its.join(", ") : "none") + '</div></div>';
+    });
+    if (state.party.calamity.trim()) out += '<p><b>Calamity:</b> ' + escH(state.party.calamity) + '</p>';
+    if (state.party.equipment.trim()) out += '<p><b>Party equipment:</b> ' + escH(state.party.equipment) + '</p>';
+    if (state.party.notes.trim()) out += '<p><b>Notes:</b> ' + escH(state.party.notes) + '</p>';
+    out += '<p class="legal">' + LEGAL_HTML + '</p>';
+    document.getElementById("printarea").innerHTML = out;
+  }
+
+  /* ---------- remove a hero (any hero past the fifth) ---------- */
   async function removeHero(n) {
-    if (n <= 6 || n > state.count) return;
+    if (n <= 5 || n > state.count) return;
     var nm = (state["c" + n].name || "").trim() || "Hero " + n;
     var yes = await confirmSheet({ q: "Remove " + nm + "?", sub: "They leave the sheet and any heroes after them move up. You can swap back for 30 days.", yes: "Remove hero", no: "Keep them", danger: true });
     if (!yes) return;
@@ -1009,10 +1482,16 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
   /* ---------- events ---------- */
   document.addEventListener("input", function (e) {
     var el = e.target, k = el.getAttribute && el.getAttribute("data-k");
+    var rl = el.getAttribute && el.getAttribute("data-roll");
+    if (rl) {
+      var rv = parseInt(el.value, 10), pv = document.querySelector('[data-rollp="' + rl + '"]');
+      pv.textContent = rv >= 1 && rv <= 20 ? (rl.split(":")[1] === "hp" ? lookup(ROLLHP, rv) + " HP" : fmt(lookup(ROLLMOD, rv))) : "";
+      return;
+    }
     if (!k) return;
     setPath(k, el.value);
     if (el.tagName === "TEXTAREA") grow(el);
-    if (/\.name$/.test(k)) paint();
+    if (/\.name$|\.items\.\d+$|\.armour$/.test(k)) paint();
     touch();
   });
   document.addEventListener("click", function (e) {
@@ -1030,15 +1509,18 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     if (b) {
       var k = b.getAttribute("data-step"), d = parseInt(b.getAttribute("data-d"), 10), cur = getPath(k) || 0, next = cur + d;
       var cc = k.split(".")[0], h = state[cc];
-      if (/\.hp$/.test(k)) { next = Math.max(0, next); if (h.maxhp > 0) next = Math.min(next, h.maxhp); }
+      if (/\.hp$/.test(k)) { next = Math.max(0, next); var em0 = effMax(h); if (em0 > 0) next = Math.min(next, em0); }
       else if (/\.maxhp$/.test(k)) {
         next = Math.max(0, Math.min(999, next));
         /* first tap on a hero with no max yet: start from their current health instead of dragging it down to 1 */
-        if (cur === 0 && d > 0 && h.hp > 0) next = Math.max(next, h.hp);
-        if (cur === 0 && h.hp === 0 && next > 0) h.hp = next;
-        else if (next > 0 && h.hp > next) h.hp = next;
+        if (cur === 0 && d > 0 && h.hp > 0) next = Math.max(next, h.hp - effects(h).maxhp);
+        h.maxhp = next;
+        var em1 = effMax(h);
+        if (cur === 0 && h.hp === 0 && next > 0) h.hp = em1;
+        else if (em1 > 0 && h.hp > em1) h.hp = em1;
       }
       else if (/\.tragedies$/.test(k)) next = Math.max(0, next);
+      else if (/\.slots$/.test(k)) next = Math.max(1, Math.min(20, next));
       else next = Math.max(-9, Math.min(9, next));
       setPath(k, next); paint(); touch(); return;
     }
@@ -1053,8 +1535,35 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
     var fb = t.closest("[data-fallen]");
     if (fb) { var fc = fb.getAttribute("data-fallen"); state[fc].fallen = !state[fc].fallen; if (state[fc].fallen) state[fc].activated = false; buildTabs(); paint(); markTabs(tab); touch(); return; }
     var rb = t.closest("[data-rest]");
-    if (rb) { var rc = state[rb.getAttribute("data-rest")]; rc.hp = rc.maxhp; paint(); touch(); return; }
+    if (rb) { var rc = state[rb.getAttribute("data-rest")]; rc.hp = effMax(rc); paint(); touch(); return; }
 
+    var cd = t.closest("[data-cond]");
+    if (cd) { var cp = cd.getAttribute("data-cond").split(":"); state[cp[0]].conds[cp[1]] = !state[cp[0]].conds[cp[1]]; paint(); touch(); return; }
+    var at = t.closest("[data-armour-tog]");
+    if (at) { var ap = at.getAttribute("data-armour-tog").split(":"), ah = state[ap[0]]; ah[ap[1]] = !ah[ap[1]]; if (ap[1] === "shield" && !ah.shield) ah.shieldx = false; paint(); touch(); return; }
+    var pd = t.closest("[data-pick-del]");
+    if (pd) {
+      var pp = pd.getAttribute("data-pick-del").split(":"), ph2 = state[pp[0]], pi2 = +pp[2], before = effMax(ph2);
+      if (pp[1] === "feat") { ph2.featpicks.splice(pi2, 1); ph2.featpicks.push(""); ph2.fused.splice(pi2, 1); ph2.fused.push(""); }
+      else { ph2.flawpicks.splice(pi2, 1); ph2.flawpicks.push(""); }
+      fixHp(ph2, before); paint(); touch(); return;
+    }
+    var pu = t.closest("[data-pick-use]");
+    if (pu) { var pq = pu.getAttribute("data-pick-use").split(":"), pq2 = state[pq[0]]; pq2.fused[+pq[1]] = pq2.fused[+pq[1]] === "1" ? "" : "1"; paint(); touch(); return; }
+    var iuB = t.closest("[data-iu]");
+    if (iuB) {
+      var ip = iuB.getAttribute("data-iu").split(":"), ih = state[ip[0]], ii = +ip[1], ikn = ITEM_BY_NAME[ih.items[ii].trim().toLowerCase()];
+      if (ikn && ikn.uses != null) { var icur = ih.iu[ii] === "" ? ikn.uses : +ih.iu[ii]; ih.iu[ii] = String(Math.max(0, Math.min(99, icur + (+ip[2])))); paint(); touch(); }
+      return;
+    }
+    var ra = t.closest("[data-roll-apply]");
+    if (ra) { applyRolls(ra.getAttribute("data-roll-apply")); return; }
+    if (t.closest("#print-open")) { buildPrint(); window.print(); return; }
+
+    var sd = t.closest("[data-scroll-del]");
+    if (sd) { var sp = sd.getAttribute("data-scroll-del").split(":"), sh = state[sp[0]], si = +sp[1]; sh.scrolls.splice(si, 1); sh.sused.splice(si, 1); sh.scrolls.push(""); sh.sused.push(""); paint(); touch(); return; }
+    var su = t.closest("[data-scroll-use]");
+    if (su) { var up = su.getAttribute("data-scroll-use").split(":"), uh = state[up[0]], ui = +up[1]; uh.sused[ui] = uh.sused[ui] === "1" ? "" : "1"; paint(); touch(); return; }
     var ph = t.closest("[data-phase]");
     if (ph) { setPhase(ph.getAttribute("data-phase")); return; }
     if (t.closest("[data-addround]")) { if (state.rounds < 8) setPhase(String(state.rounds + 1), state.rounds + 1); return; }
@@ -1068,6 +1577,46 @@ textarea.box { resize: none; line-height: 1.35; min-height: 96px; display: block
 
     var tt = t.closest("[data-tab]");
     if (tt) showTab(tt.getAttribute("data-tab"));
+  });
+
+  /* scroll and weapon dropdowns */
+  document.addEventListener("change", function (e) {
+    var el = e.target; if (!el.getAttribute) return;
+    var sa = el.getAttribute("data-scroll-add");
+    if (sa) {
+      if (!SCROLL_BY[el.value]) return;
+      var sh2 = state[sa], free = sh2.scrolls.indexOf("");
+      if (free < 0) return;
+      sh2.scrolls[free] = el.value; sh2.sused[free] = ""; paint(); touch(); return;
+    }
+    var pa = el.getAttribute("data-pick-add");
+    if (pa) {
+      var pa2 = pa.split(":"), ph3 = state[pa2[0]], kind = pa2[1], by = kind === "feat" ? FEAT_BY : FLAW_BY;
+      if (!by[el.value]) return;
+      var arr = kind === "feat" ? ph3.featpicks : ph3.flawpicks, fr = arr.indexOf("");
+      if (fr < 0) return;
+      var bef = effMax(ph3); arr[fr] = el.value; if (kind === "feat") ph3.fused[fr] = "";
+      fixHp(ph3, bef); paint(); touch(); return;
+    }
+    var ab = el.getAttribute("data-armour-body");
+    if (ab) { state[ab].abody = el.value; paint(); touch(); return; }
+    var ia = el.getAttribute("data-item-add");
+    if (ia) {
+      var itm = ITEM_BY_ID[el.value]; if (!itm) return;
+      var ih2 = state[ia], fi = ih2.items.findIndex(function (x) { return !x.trim(); });
+      if (fi < 0) { toast("No free equipment line.", true); el.value = ""; return; }
+      ih2.items[fi] = itm.n; ih2.iu[fi] = itm.uses != null ? String(itm.uses) : ""; el.value = ""; paint(); touch(); return;
+    }
+    var wk = el.getAttribute("data-weapon");
+    if (wk) {
+      var wp = wk.split("."), hc = state[wp[0]], key = wp[1], v = el.value;
+      if (v === "__other") {
+        if (WEAPON_BY_NAME[(hc[key] || "").toLowerCase()]) { hc[key] = ""; hc[key + "_dmg"] = ""; }
+        hc[key + "_o"] = true; paint(); touch();
+        var oi = document.getElementById(wp[0] + "-" + key); if (oi) oi.focus();
+      } else if (v === "") { hc[key] = ""; hc[key + "_dmg"] = ""; hc[key + "_o"] = false; paint(); touch(); }
+      else { var w = WEAPON_BY_ID[v]; if (!w) return; hc[key] = w.n; hc[key + "_o"] = false; if (w.d) hc[key + "_dmg"] = w.d; paint(); touch(); }
+    }
   });
 
   /* tab bar: arrow keys */

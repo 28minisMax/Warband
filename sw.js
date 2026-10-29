@@ -1,6 +1,6 @@
 /* Warband Sheet service worker.
    Bump CACHE whenever you change any cached file so phones pick up the new version. */
-var CACHE = "warband-v5";
+var CACHE = "warband-v9";
 var ASSETS = [
   "./",
   "index.html",
